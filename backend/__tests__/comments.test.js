@@ -1,7 +1,16 @@
 import request from 'supertest';
-import { app } from '../server.js';
+import { app, resetComments } from '../server.js';
 
 describe('Comments API Endpoints', () => {
+  // 各テストの前にコメントをリセットし、テストデータを準備
+  beforeEach(async () => {
+    resetComments();
+    // テストケース用のコメントを作成
+    await request(app)
+      .post('/comments')
+      .send({ content: 'Test comment 1', author: 'Test User 1' });
+  });
+
   // テストケースの配列を定義（テーブル駆動テスト）
   const testCases = [
     {
@@ -72,6 +81,10 @@ describe('Comments API Endpoints', () => {
 });
 
 describe('Comments API - バリデーション', () => {
+  beforeEach(() => {
+    resetComments();
+  });
+
   const validationCases = [
     {
       method: 'POST',
@@ -121,6 +134,10 @@ describe('Comments API - バリデーション', () => {
 });
 
 describe('Comments API - エラーハンドリング', () => {
+  beforeEach(() => {
+    resetComments();
+  });
+
   const errorCases = [
     {
       method: 'GET',
@@ -174,6 +191,10 @@ describe('Comments API - エラーハンドリング', () => {
 });
 
 describe('Comments API - データ整合性', () => {
+  beforeEach(() => {
+    resetComments();
+  });
+
   test('作成されたコメントがcreatedAtタイムスタンプを持つこと', async () => {
     const response = await request(app)
       .post('/comments')
