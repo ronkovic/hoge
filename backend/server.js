@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
 import { pool } from './db.js';
 
 dotenv.config();
@@ -82,7 +83,8 @@ app.delete('/todos/:id', (req, res) => {
 
 // サーバー起動（直接実行時のみ）
 // import.meta.urlを使用してモジュールが直接実行されたかを判定
-const isMainModule = process.argv[1] && process.argv[1].endsWith('server.js');
+const __filename = fileURLToPath(import.meta.url);
+const isMainModule = process.argv[1] === __filename;
 
 if (isMainModule) {
   app.listen(PORT, () => {
