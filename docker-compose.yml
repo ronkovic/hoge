@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-version: '3.8'
-
-services:
-  postgres:
-    image: postgres:18-alpine
-    container_name: todo-postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: todo_db
-=======
 services:
   postgres:
     image: postgres:16-alpine
@@ -17,24 +5,17 @@ services:
       POSTGRES_DB: todoapp
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
->>>>>>> feature/_20260205_153345-task-019
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-<<<<<<< HEAD
-      - ./backend/schema.sql:/docker-entrypoint-initdb.d/schema.sql
-=======
       - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
->>>>>>> feature/_20260205_153345-task-019
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-<<<<<<< HEAD
-=======
   backend:
     build:
       context: ./backend
@@ -64,6 +45,5 @@ services:
     depends_on:
       - backend
 
->>>>>>> feature/_20260205_153345-task-019
 volumes:
   postgres_data:
