@@ -159,7 +159,7 @@ test.describe('設定ファイルの詳細検証', () => {
           tsconfigApp.compilerOptions?.jsx !== undefined;
 
         expect(hasJsxConfig).toBeTruthy();
-      } catch (error) {
+      } catch {
         // tsconfig.app.jsonが存在しない場合はスキップ
         test.skip();
       }
@@ -352,7 +352,7 @@ test.describe('設定ファイルの詳細検証', () => {
         await execAsync('npm run format:check', { cwd: PROJECT_ROOT });
         // 実装がない段階では失敗するかもしれない
         // 設定が正しければパスする可能性もある
-      } catch (error) {
+      } catch {
         // エラーがあっても設定ファイルの問題かコードの問題かを区別できない
         // このテストは実装後に重要になる
       }

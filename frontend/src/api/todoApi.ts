@@ -30,7 +30,7 @@ export const todoApi = {
 
   async updateTodo(id: number, completed: boolean): Promise<Todo> {
     if (USE_MOCK) {
-      const todo = mockTodos.find(t => t.id === id);
+      const todo = mockTodos.find((t) => t.id === id);
       if (!todo) throw new Error('Todo not found');
       todo.completed = completed;
       axios.put<Todo>(`${API_BASE_URL}/todos/${id}`, { completed }).catch(() => {});
@@ -42,7 +42,7 @@ export const todoApi = {
 
   async deleteTodo(id: number): Promise<void> {
     if (USE_MOCK) {
-      const index = mockTodos.findIndex(t => t.id === id);
+      const index = mockTodos.findIndex((t) => t.id === id);
       if (index !== -1) {
         mockTodos.splice(index, 1);
       }
