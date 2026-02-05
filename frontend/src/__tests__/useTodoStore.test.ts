@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useTodoStore } from '../stores/useTodoStore';
-import type { Todo } from '../types/todo';
 
 describe('useTodoStore', () => {
   beforeEach(() => {
