@@ -28,14 +28,14 @@ Node.js、React、PostgreSQLで構築されたフルスタックTodoアプリケ
 │   (React)   │◄───────►│ (Express.js)│◄───────►│(PostgreSQL) │
 │ Port: 5173  │  HTTP   │ Port: 3001  │   SQL   │ Port: 5432  │
 └─────────────┘         └─────────────┘         └─────────────┘
-      │                       │
-      │                       │
-      ▼                       ▼
-  User Browser          REST API Server
-  - Todo UI              - GET /api/todos
-  - Form Input           - POST /api/todos
-  - State Mgmt           - PUT /api/todos/:id
-                         - DELETE /api/todos/:id
+     │                       │
+     │                       │
+     ▼                       ▼
+ User Browser          REST API Server
+ - Todo UI              - GET /api/todos
+ - Form Input           - POST /api/todos
+ - State Mgmt           - PUT /api/todos/:id
+                        - DELETE /api/todos/:id
 ```
 
 ## クイックスタート
