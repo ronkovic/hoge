@@ -26,6 +26,12 @@ test.describe('Todo アプリケーション', () => {
     });
 
     test('各TodoにタイトルとステータスとIDが表示される', async ({ page }) => {
+      // まずTodoを追加
+      const input = page.locator('[data-testid="todo-input"]');
+      const submitButton = page.locator('[data-testid="todo-submit"]');
+      await input.fill('テスト用Todo');
+      await submitButton.click();
+
       const firstItem = page.locator('[data-testid="todo-item"]').first();
       await expect(firstItem.locator('[data-testid="todo-title"]')).toBeVisible();
       await expect(firstItem.locator('[data-testid="todo-status"]')).toBeVisible();
@@ -91,6 +97,12 @@ test.describe('Todo アプリケーション', () => {
 
   test.describe('Todo完了切り替え機能', () => {
     test('Todoの完了ボタンが表示される', async ({ page }) => {
+      // まずTodoを追加
+      const input = page.locator('[data-testid="todo-input"]');
+      const submitButton = page.locator('[data-testid="todo-submit"]');
+      await input.fill('ボタンテスト');
+      await submitButton.click();
+
       // 最初のTodoアイテムの完了ボタンを確認
       const firstItem = page.locator('[data-testid="todo-item"]').first();
       const toggleButton = firstItem.locator('[data-testid="todo-toggle"]');
@@ -164,6 +176,12 @@ test.describe('Todo アプリケーション', () => {
 
   test.describe('Todo削除機能', () => {
     test('Todoの削除ボタンが表示される', async ({ page }) => {
+      // まずTodoを追加
+      const input = page.locator('[data-testid="todo-input"]');
+      const submitButton = page.locator('[data-testid="todo-submit"]');
+      await input.fill('削除ボタンテスト');
+      await submitButton.click();
+
       const firstItem = page.locator('[data-testid="todo-item"]').first();
       const deleteButton = firstItem.locator('[data-testid="todo-delete"]');
 
