@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'test-secret-key';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'test-refresh-secret-key';
+// 本番環境では必ず環境変数を設定してください
+const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'test' ? 'test-secret-key' : (() => { throw new Error('JWT_SECRET environment variable is required'); })());
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || (process.env.NODE_ENV === 'test' ? 'test-refresh-secret-key' : (() => { throw new Error('JWT_REFRESH_SECRET environment variable is required'); })());
 
 /**
  * JWT認証ミドルウェア
@@ -28,14 +29,16 @@ export async function verifyToken(req, res, next) {
       return res.status(401).json({ message: 'Invalid token format' });
     }
 
-    // テスト用の特殊なトークン処理
-    if (token === 'expired.jwt.token') {
-      return res.status(401).json({ message: 'Token expired' });
-    }
+    // テスト環境のみ: 特殊なトークン処理
+    if (process.env.NODE_ENV === 'test') {
+      if (token === 'expired.jwt.token') {
+        return res.status(401).json({ message: 'Token expired' });
+      }
 
-    if (token === 'valid.jwt.token') {
-      req.user = { id: 123 };
-      return next();
+      if (token === 'valid.jwt.token') {
+        req.user = { id: 123 };
+        return next();
+      }
     }
 
     // トークンの検証
@@ -75,8 +78,8 @@ export function generateToken(userId, expiresIn = '1h') {
  * @returns {Promise<string>} 新しいアクセストークン
  */
 export async function refreshToken(refreshTokenStr) {
-  // テスト用の特殊なトークン処理
-  if (refreshTokenStr === 'valid.refresh.token') {
+  // テスト環境のみ: 特殊なトークン処理
+  if (process.env.NODE_ENV === 'test' && refreshTokenStr === 'valid.refresh.token') {
     return generateToken(123);
   }
 
