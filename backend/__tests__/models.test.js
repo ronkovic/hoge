@@ -1,5 +1,15 @@
 import { pool } from '../db.js';
 
+// テスト終了時にプールを閉じる
+afterAll(async () => {
+  await pool.end();
+});
+
+// 各テスト後にテーブルをクリーンアップ
+afterEach(async () => {
+  await pool.query('TRUNCATE TABLE comments, posts, users RESTART IDENTITY CASCADE');
+});
+
 describe('Database Connection', () => {
   // データベース接続のテストケース
   const connectionTestCases = [
@@ -80,9 +90,16 @@ describe('User Model', () => {
       expect(UserModel).not.toBeNull();
       expect(UserModel[operation]).toBeDefined();
 
+      let actualInput = input;
+      // IDが必要な操作の場合、テスト用データを作成
+      if (operation !== 'create' && operation !== 'findAll' && input && input.id) {
+        const createResult = await UserModel.create({ name: 'Test User', email: 'testuser@example.com' });
+        actualInput = { ...input, id: createResult.id };
+      }
+
       let result;
-      if (input) {
-        result = await UserModel[operation](input);
+      if (actualInput) {
+        result = await UserModel[operation](actualInput);
       } else {
         result = await UserModel[operation]();
       }
@@ -107,6 +124,7 @@ describe('User Model', () => {
 describe('Post Model', () => {
   // Postモデルが存在しないため、このテストは失敗する
   let PostModel;
+  let testUserId;
 
   beforeAll(async () => {
     try {
@@ -117,11 +135,20 @@ describe('Post Model', () => {
     }
   });
 
-  const postModelTestCases = [
+  beforeEach(async () => {
+    // テスト用ユーザーを作成
+    const userResult = await pool.query(
+      'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id',
+      ['Test User', 'test@example.com']
+    );
+    testUserId = userResult.rows[0].id;
+  });
+
+  const getPostModelTestCases = () => [
     {
       operation: 'create',
       description: '投稿を作成できること',
-      input: { user_id: 1, title: 'Test Post', content: 'Test content' },
+      inputFn: () => ({ user_id: testUserId, title: 'Test Post', content: 'Test content' }),
       expectedKeys: ['id', 'user_id', 'title', 'content', 'created_at']
     },
     {
@@ -138,7 +165,7 @@ describe('Post Model', () => {
     {
       operation: 'findByUserId',
       description: 'ユーザーIDで投稿を取得できること',
-      input: { user_id: 1 },
+      input: { user_id: testUserId },
       expectedType: 'array'
     },
     {
@@ -155,15 +182,22 @@ describe('Post Model', () => {
     }
   ];
 
-  test.each(postModelTestCases)(
+  test.each(getPostModelTestCases())(
     '$operation - $description',
-    async ({ operation, input, expectedKeys, expectedType, expectedResult }) => {
+    async ({ operation, input, inputFn, expectedKeys, expectedType, expectedResult }) => {
       expect(PostModel).not.toBeNull();
       expect(PostModel[operation]).toBeDefined();
 
+      let actualInput = inputFn ? inputFn() : input;
+      // IDが必要な操作の場合、テスト用データを作成
+      if (operation !== 'create' && operation !== 'findAll' && operation !== 'findByUserId' && actualInput && actualInput.id) {
+        const createResult = await PostModel.create({ user_id: testUserId, title: 'Test Post', content: 'Test content' });
+        actualInput = { ...actualInput, id: createResult.id };
+      }
+
       let result;
-      if (input) {
-        result = await PostModel[operation](input);
+      if (actualInput) {
+        result = await PostModel[operation](actualInput);
       } else {
         result = await PostModel[operation]();
       }
@@ -188,6 +222,8 @@ describe('Post Model', () => {
 describe('Comment Model', () => {
   // Commentモデルが存在しないため、このテストは失敗する
   let CommentModel;
+  let testUserId;
+  let testPostId;
 
   beforeAll(async () => {
     try {
@@ -198,11 +234,27 @@ describe('Comment Model', () => {
     }
   });
 
-  const commentModelTestCases = [
+  beforeEach(async () => {
+    // テスト用ユーザーを作成
+    const userResult = await pool.query(
+      'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id',
+      ['Test User', 'test@example.com']
+    );
+    testUserId = userResult.rows[0].id;
+
+    // テスト用投稿を作成
+    const postResult = await pool.query(
+      'INSERT INTO posts (user_id, title, content) VALUES ($1, $2, $3) RETURNING id',
+      [testUserId, 'Test Post', 'Test content']
+    );
+    testPostId = postResult.rows[0].id;
+  });
+
+  const getCommentModelTestCases = () => [
     {
       operation: 'create',
       description: 'コメントを作成できること',
-      input: { post_id: 1, user_id: 1, content: 'Test comment' },
+      inputFn: () => ({ post_id: testPostId, user_id: testUserId, content: 'Test comment' }),
       expectedKeys: ['id', 'post_id', 'user_id', 'content', 'created_at']
     },
     {
@@ -219,13 +271,13 @@ describe('Comment Model', () => {
     {
       operation: 'findByPostId',
       description: '投稿IDでコメントを取得できること',
-      input: { post_id: 1 },
+      input: { post_id: testPostId },
       expectedType: 'array'
     },
     {
       operation: 'findByUserId',
       description: 'ユーザーIDでコメントを取得できること',
-      input: { user_id: 1 },
+      input: { user_id: testUserId },
       expectedType: 'array'
     },
     {
@@ -242,15 +294,22 @@ describe('Comment Model', () => {
     }
   ];
 
-  test.each(commentModelTestCases)(
+  test.each(getCommentModelTestCases())(
     '$operation - $description',
-    async ({ operation, input, expectedKeys, expectedType, expectedResult }) => {
+    async ({ operation, input, inputFn, expectedKeys, expectedType, expectedResult }) => {
       expect(CommentModel).not.toBeNull();
       expect(CommentModel[operation]).toBeDefined();
 
+      let actualInput = inputFn ? inputFn() : input;
+      // IDが必要な操作の場合、テスト用データを作成
+      if (operation !== 'create' && operation !== 'findAll' && operation !== 'findByPostId' && operation !== 'findByUserId' && actualInput && actualInput.id) {
+        const createResult = await CommentModel.create({ post_id: testPostId, user_id: testUserId, content: 'Test comment' });
+        actualInput = { ...actualInput, id: createResult.id };
+      }
+
       let result;
-      if (input) {
-        result = await CommentModel[operation](input);
+      if (actualInput) {
+        result = await CommentModel[operation](actualInput);
       } else {
         result = await CommentModel[operation]();
       }
