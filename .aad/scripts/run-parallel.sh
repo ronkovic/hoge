@@ -19,6 +19,7 @@ Arguments:
 
 Options:
   --help, -h        このヘルプメッセージを表示
+  --resume <run_id> 既存の実行を途中から再開
   --dry-run         実行せずに計画のみ表示
   --no-cleanup      完了後もWorktreeを残す
   --attach          tmuxセッションにアタッチ
@@ -42,6 +43,7 @@ DRY_RUN=false
 NO_CLEANUP=false
 ATTACH=false
 BACKGROUND=false
+RESUME_RUN_ID=""
 
 # 引数パース
 REQUIREMENT_FILE=""
@@ -51,6 +53,14 @@ while [[ $# -gt 0 ]]; do
   case $1 in
     --help|-h)
       show_help
+      ;;
+    --resume)
+      if [ -z "${2:-}" ]; then
+        echo "❌ ERROR: --resume オプションには run_id が必要です"
+        exit 1
+      fi
+      RESUME_RUN_ID="$2"
+      shift 2
       ;;
     --dry-run)
       DRY_RUN=true
@@ -119,7 +129,8 @@ check_prerequisites() {
     exit 1
   fi
 
-  if [ ! -f "$REQUIREMENT_FILE" ]; then
+  # 再開モード時は要件ファイルのチェックをスキップ（task_plan.json を使用するため）
+  if [ -z "${RESUME_RUN_ID}" ] && [ ! -f "$REQUIREMENT_FILE" ]; then
     echo "❌ ERROR: 要件ファイルが見つかりません: ${REQUIREMENT_FILE}"
     exit 1
   fi
@@ -174,6 +185,120 @@ initialize() {
   echo "📂 Run ID: ${RUN_ID}"
   echo "📂 ドキュメントディレクトリ: ${DOCS_DIR}"
   echo "👷 ワーカー数: ${NUM_WORKERS}"
+}
+
+# 既存の実行を再開
+resume_from_existing() {
+  echo "🔄 既存の実行を再開中: ${RESUME_RUN_ID}"
+
+  RUN_ID="${RESUME_RUN_ID}"
+  DOCS_DIR=".aad/docs/${RUN_ID}"
+  TASK_PLAN="${DOCS_DIR}/task_plan.json"
+  PROGRESS_FILE="${DOCS_DIR}/progress.json"
+  QUEUE_DIR="${DOCS_DIR}/queue"
+
+  # 必要なファイル/ディレクトリの存在確認
+  if [ ! -f "$TASK_PLAN" ]; then
+    echo "❌ ERROR: task_plan.json が見つかりません: ${TASK_PLAN}"
+    exit 1
+  fi
+
+  if [ ! -d "$QUEUE_DIR" ]; then
+    echo "❌ ERROR: queue ディレクトリが見つかりません: ${QUEUE_DIR}"
+    exit 1
+  fi
+
+  # task_plan.json から親ブランチを取得
+  PARENT_BRANCH=$(jq -r '.parent_branch' "$TASK_PLAN")
+  PARENT_WORKTREE="../worktrees/parent-${RUN_ID}"
+
+  echo "📂 Run ID: ${RUN_ID}"
+  echo "📂 ドキュメントディレクトリ: ${DOCS_DIR}"
+  echo "🌳 親ブランチ: ${PARENT_BRANCH}"
+
+  # running タスクを pending に戻す（クラッシュ復旧）
+  if [ -d "${QUEUE_DIR}/running" ]; then
+    local moved_count=0
+    for task_file in "${QUEUE_DIR}/running"/*.json; do
+      [ -e "$task_file" ] || continue
+      mv "$task_file" "${QUEUE_DIR}/pending/"
+      echo "  ↩️  running → pending: $(basename "$task_file")"
+      moved_count=$((moved_count + 1))
+    done
+    if [ "$moved_count" -gt 0 ]; then
+      echo "  🔄 ${moved_count} 個のタスクを復旧しました"
+    fi
+  fi
+
+  # failed タスクを pending に戻す（再試行）
+  if [ -d "${QUEUE_DIR}/failed" ]; then
+    local retry_count=0
+    for task_file in "${QUEUE_DIR}/failed"/*.json; do
+      [ -e "$task_file" ] || continue
+      mv "$task_file" "${QUEUE_DIR}/pending/"
+      echo "  ↩️  failed → pending: $(basename "$task_file")"
+      retry_count=$((retry_count + 1))
+    done
+    if [ "$retry_count" -gt 0 ]; then
+      echo "  🔄 ${retry_count} 個の失敗タスクを再試行します"
+    fi
+  fi
+
+  # ワーカー状態を idle にリセット
+  if [ -d "${QUEUE_DIR}/workers" ]; then
+    for worker_file in "${QUEUE_DIR}/workers"/*.json; do
+      [ -e "$worker_file" ] || continue
+      jq '.status = "idle" | .current_task = null' "$worker_file" > "${worker_file}.tmp"
+      mv "${worker_file}.tmp" "$worker_file"
+    done
+    echo "  🔄 ワーカー状態をリセットしました"
+  fi
+
+  # 進捗状況の確認
+  local pending_count=$(find "${QUEUE_DIR}/pending" -name "*.json" 2>/dev/null | wc -l | xargs)
+  local completed_count=$(find "${QUEUE_DIR}/completed" -name "*.json" 2>/dev/null | wc -l | xargs)
+  local total_tasks=$(jq '.tasks | length' "$TASK_PLAN")
+
+  echo "  📊 進捗: 完了 ${completed_count}/${total_tasks}, 待機中 ${pending_count}"
+
+  export RUN_ID PARENT_BRANCH PARENT_WORKTREE TASK_PLAN DOCS_DIR PROGRESS_FILE QUEUE_DIR
+}
+
+# Worktree存在確認
+verify_worktrees_exist() {
+  echo "🔍 Worktree 存在確認中..."
+
+  # 親 worktree 確認
+  if [ ! -d "${PARENT_WORKTREE}" ]; then
+    echo "❌ ERROR: 親 worktree が見つかりません: ${PARENT_WORKTREE}"
+    echo "   再開には worktree が必要です。削除されている場合は最初からやり直してください。"
+    exit 1
+  fi
+
+  # 各タスクの worktree 確認（pending のみ）
+  local missing_count=0
+  local missing_tasks=()
+
+  for task_file in "${QUEUE_DIR}/pending"/*.json; do
+    [ -e "$task_file" ] || continue
+    task_id=$(basename "$task_file" .json)
+    wt_path="../worktrees/wt-${task_id}"
+    if [ ! -d "$wt_path" ]; then
+      echo "  ⚠️  Worktree 不足: ${task_id}"
+      missing_tasks+=("$task_id")
+      missing_count=$((missing_count + 1))
+    fi
+  done
+
+  if [ "$missing_count" -gt 0 ]; then
+    echo "❌ ERROR: ${missing_count} 個の Worktree が見つかりません"
+    echo "   不足しているタスク: ${missing_tasks[*]}"
+    echo "   再開には全ての worktree が必要です。削除されている場合は最初からやり直してください。"
+    exit 1
+  fi
+
+  local verified_count=$(find "${QUEUE_DIR}/pending" -name "*.json" 2>/dev/null | wc -l | xargs)
+  echo "✅ Worktree 確認完了 (${verified_count} 個)"
 }
 
 # テンプレートをworktreeにコピーする関数
@@ -432,6 +557,38 @@ start_tmux() {
   fi
 }
 
+# tmuxセッション再開
+start_tmux_resume() {
+  echo "🖥️  tmuxセッション再開中..."
+
+  SESSION_NAME="aad-${RUN_ID}"
+  export SESSION_NAME
+
+  # 既存セッションが残っている場合は削除
+  if tmux has-session -t "${SESSION_NAME}" 2>/dev/null; then
+    echo "  ⚠️  既存のセッションを終了します: ${SESSION_NAME}"
+    tmux kill-session -t "${SESSION_NAME}" 2>/dev/null || true
+  fi
+
+  # 再開モードを環境変数で渡す
+  export RESUME_MODE="true"
+  ./.aad/scripts/tmux-orchestrator.sh "${RUN_ID}" "${NUM_WORKERS}"
+
+  echo "✅ tmuxセッション再開完了: ${SESSION_NAME}"
+
+  # アタッチモードの場合はセッションにアタッチ
+  if [ "$ATTACH" = true ]; then
+    echo "🔗 tmuxセッションにアタッチします..."
+    echo "   (デタッチするには Ctrl+b d を押してください)"
+    sleep 2
+    tmux attach -t "${SESSION_NAME}"
+  else
+    echo "📊 セッションにアタッチ: tmux attach -t ${SESSION_NAME}"
+    echo "🔧 デタッチ: Ctrl+b d"
+    echo "🔄 ウィンドウ切り替え: Ctrl+b n / Ctrl+b p"
+  fi
+}
+
 # 進捗監視
 monitor_progress() {
   echo ""
@@ -570,20 +727,36 @@ show_final_results() {
 
 # メイン実行
 main() {
-  echo "🤖 tmux並列実行モードで起動します..."
-  echo "📂 要件ファイル: ${REQUIREMENT_FILE}"
-  echo ""
+  if [ -n "${RESUME_RUN_ID}" ]; then
+    # 再開モード
+    echo "🔄 既存の実行を再開します..."
+    echo "📂 Run ID: ${RESUME_RUN_ID}"
+    echo ""
 
-  check_prerequisites
-  initialize
-  create_parent_branch
-  run_splitter
-  verify_conflicts
-  create_worktrees
-  start_tmux
-  monitor_progress
-  cleanup
-  show_final_results
+    check_prerequisites
+    resume_from_existing
+    verify_worktrees_exist
+    start_tmux_resume
+    monitor_progress
+    cleanup
+    show_final_results
+  else
+    # 通常モード
+    echo "🤖 tmux並列実行モードで起動します..."
+    echo "📂 要件ファイル: ${REQUIREMENT_FILE}"
+    echo ""
+
+    check_prerequisites
+    initialize
+    create_parent_branch
+    run_splitter
+    verify_conflicts
+    create_worktrees
+    start_tmux
+    monitor_progress
+    cleanup
+    show_final_results
+  fi
 
   echo ""
   echo "✅ 全処理完了"

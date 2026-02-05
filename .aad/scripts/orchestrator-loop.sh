@@ -45,6 +45,26 @@ update_draft_pr() {
   # 親Worktree内でPR更新
   cd "${PARENT_WORKTREE}"
 
+  # PRが存在するかチェック
+  if ! gh pr view --json number >/dev/null 2>&1; then
+    echo "📝 Creating Draft PR..."
+    local parent_branch=$(jq -r '.parent_branch' "$TASK_PLAN")
+    local pr_title=$(jq -r '.title // "Feature implementation"' "$TASK_PLAN")
+
+    gh pr create --draft \
+      --title "$pr_title" \
+      --body "## 概要\n\n進行中...\n" \
+      --base main \
+      --head "$parent_branch"
+
+    if [ $? -ne 0 ]; then
+      echo "❌ Failed to create Draft PR"
+      cd -
+      return 1
+    fi
+    echo "✅ Draft PR created"
+  fi
+
   # 変更ファイル一覧（最大20件）
   local changed_files=$(git diff --name-only main...HEAD 2>/dev/null | head -20 | sed 's/^/- /' || echo "")
 
@@ -124,17 +144,27 @@ if [ ! -f "${TASK_PLAN}" ]; then
   exit 1
 fi
 
-# 初期化: pending/にタスクを配置
-echo "📋 Initializing task queue..."
-jq -c '.tasks[]' "${TASK_PLAN}" | while read -r task; do
-  task_id=$(echo "$task" | jq -r '.task_id')
-  echo "$task" > "${QUEUE_DIR}/pending/${task_id}.json"
-  echo "  - Queued: ${task_id}"
-done
+# 初期化: pending/にタスクを配置（再開モードの場合はスキップ）
+if [ "${RESUME_MODE:-}" = "true" ]; then
+  echo "🔄 再開モード: 既存のキュー状態を使用します"
+  # pending/completed/failed の現在の状態を表示
+  pending_count=$(find "${QUEUE_DIR}/pending" -name "*.json" 2>/dev/null | wc -l | tr -d ' ')
+  completed_count=$(find "${QUEUE_DIR}/completed" -name "*.json" 2>/dev/null | wc -l | tr -d ' ')
+  failed_count=$(find "${QUEUE_DIR}/failed" -name "*.json" 2>/dev/null | wc -l | tr -d ' ')
+  echo "  📊 現状: pending=${pending_count}, completed=${completed_count}, failed=${failed_count}"
+else
+  echo "📋 Initializing task queue..."
+  jq -c '.tasks[]' "${TASK_PLAN}" | while read -r task; do
+    task_id=$(echo "$task" | jq -r '.task_id')
+    echo "$task" > "${QUEUE_DIR}/pending/${task_id}.json"
+    echo "  - Queued: ${task_id}"
+  done
+fi
 
-# 進捗ファイル初期化
-total_tasks=$(jq '.tasks | length' "${TASK_PLAN}")
-cat > "${PROGRESS_FILE}" <<EOF
+# 進捗ファイル初期化（再開モードの場合はスキップ）
+if [ "${RESUME_MODE:-}" != "true" ]; then
+  total_tasks=$(jq '.tasks | length' "${TASK_PLAN}")
+  cat > "${PROGRESS_FILE}" <<EOF
 {
   "run_id": "${RUN_ID}",
   "total_tasks": ${total_tasks},
@@ -145,6 +175,24 @@ cat > "${PROGRESS_FILE}" <<EOF
   "start_time": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 }
 EOF
+else
+  echo "🔄 再開モード: 既存の進捗ファイルを使用します"
+  if [ ! -f "${PROGRESS_FILE}" ]; then
+    echo "⚠️  WARNING: 進捗ファイルが見つかりません。新規作成します。"
+    total_tasks=$(jq '.tasks | length' "${TASK_PLAN}")
+    cat > "${PROGRESS_FILE}" <<EOF
+{
+  "run_id": "${RUN_ID}",
+  "total_tasks": ${total_tasks},
+  "pending": 0,
+  "running": 0,
+  "completed": 0,
+  "failed": 0,
+  "start_time": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
+EOF
+  fi
+fi
 
 echo "🚀 Orchestrator loop starting..."
 

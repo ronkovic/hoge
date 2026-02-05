@@ -14,8 +14,18 @@ SESSION_NAME="aad-${RUN_ID}"
 PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 QUEUE_DIR="${PROJECT_ROOT}/.aad/docs/${RUN_ID}/queue"
 
-# キューディレクトリ構造を作成
-mkdir -p "${QUEUE_DIR}"/{pending,running,completed,failed,workers}
+# 再開モードの確認
+if [ "${RESUME_MODE:-}" = "true" ]; then
+  echo "🔄 再開モード: 既存のキューディレクトリを再利用します"
+  # キューディレクトリは既に存在する前提
+  if [ ! -d "${QUEUE_DIR}" ]; then
+    echo "❌ ERROR: キューディレクトリが見つかりません: ${QUEUE_DIR}"
+    exit 1
+  fi
+else
+  # 通常モード: キューディレクトリ構造を作成
+  mkdir -p "${QUEUE_DIR}"/{pending,running,completed,failed,workers}
+fi
 
 # 既存セッションがあれば削除
 tmux kill-session -t "${SESSION_NAME}" 2>/dev/null || true
