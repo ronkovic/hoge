@@ -1,21 +1,5 @@
 import request from 'supertest';
-import express from 'express';
-
-// テスト用のアプリケーションを作成する想定
-// 実装が完了したら、server.jsからエクスポートされたappを使用する
-let app;
-
-beforeAll(() => {
-  // 仮のExpressアプリケーションをインポート（実装前なので失敗する）
-  try {
-    // この時点ではserver.jsが存在しないか、exportしていないので失敗する
-    const serverModule = require('../server.js');
-    app = serverModule.app || serverModule.default;
-  } catch (error) {
-    // server.jsが存在しない、またはエクスポートされていない場合
-    app = express();
-  }
-});
+import { app } from '../server.js';
 
 describe('Todo API Endpoints', () => {
   // テストケースの配列を定義（テーブル駆動テスト風）
