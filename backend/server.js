@@ -14,6 +14,11 @@ app.use(express.json());
 let todos = [];
 let nextId = 1;
 
+// In-memory storage for users and tokens
+let users = [];
+let userNextId = 1;
+let tokens = new Map();
+
 // In-memory storage for articles
 let articles = [
   {
@@ -27,6 +32,90 @@ let articles = [
   }
 ];
 let nextArticleId = 2;
+
+// Auth middleware
+const authMiddleware = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  const token = authHeader.substring(7);
+  const userId = tokens.get(token);
+  if (!userId) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  req.userId = userId;
+  next();
+};
+
+// POST /api/auth/register - ユーザー登録
+app.post('/api/auth/register', (req, res) => {
+  const { username, email, password } = req.body;
+
+  if (!username || !email || !password) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
+  const existingUser = users.find(u => u.email === email);
+  if (existingUser) {
+    return res.status(409).json({ message: 'User already exists' });
+  }
+
+  const newUser = {
+    id: userNextId++,
+    username,
+    email,
+    password,
+    createdAt: new Date().toISOString()
+  };
+
+  users.push(newUser);
+
+  const { password: _, ...userWithoutPassword } = newUser;
+  res.status(201).json(userWithoutPassword);
+});
+
+// POST /api/auth/login - ログイン
+app.post('/api/auth/login', (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
+  const user = users.find(u => u.email === email && u.password === password);
+  if (!user) {
+    return res.status(401).json({ message: 'Invalid credentials' });
+  }
+
+  const token = `token_${Date.now()}_${Math.random()}`;
+  tokens.set(token, user.id);
+
+  const { password: _, ...userWithoutPassword } = user;
+  res.status(200).json({ token, user: userWithoutPassword });
+});
+
+// GET /api/auth/me - ユーザー情報取得
+app.get('/api/auth/me', authMiddleware, (req, res) => {
+  const user = users.find(u => u.id === req.userId);
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  const { password: _, ...userWithoutPassword } = user;
+  res.status(200).json(userWithoutPassword);
+});
+
+// POST /api/auth/logout - ログアウト
+app.post('/api/auth/logout', authMiddleware, (req, res) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader.substring(7);
+  tokens.delete(token);
+
+  res.status(200).json({ message: 'Logged out successfully' });
+});
 
 // GET /todos - すべてのTodoを取得
 app.get('/todos', (req, res) => {

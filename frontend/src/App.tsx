@@ -9,17 +9,17 @@ function App() {
   const [todos, setTodos] = useState<Todo[]>([]);
 
   useEffect(() => {
+    const loadTodos = async () => {
+      try {
+        const data = await todoApi.getTodos();
+        setTodos(data);
+      } catch (error) {
+        console.error('Failed to load todos:', error);
+      }
+    };
+
     loadTodos();
   }, []);
-
-  const loadTodos = async () => {
-    try {
-      const data = await todoApi.getTodos();
-      setTodos(data);
-    } catch (error) {
-      console.error('Failed to load todos:', error);
-    }
-  };
 
   const handleAddTodo = async (title: string) => {
     try {
@@ -32,11 +32,11 @@ function App() {
 
   const handleToggleTodo = async (id: number) => {
     try {
-      const todo = todos.find(t => t.id === id);
+      const todo = todos.find((t) => t.id === id);
       if (!todo) return;
 
       const updatedTodo = await todoApi.updateTodo(id, !todo.completed);
-      setTodos(todos.map(t => t.id === id ? updatedTodo : t));
+      setTodos(todos.map((t) => (t.id === id ? updatedTodo : t)));
     } catch (error) {
       console.error('Failed to toggle todo:', error);
     }
@@ -45,7 +45,7 @@ function App() {
   const handleDeleteTodo = async (id: number) => {
     try {
       await todoApi.deleteTodo(id);
-      setTodos(todos.filter(t => t.id !== id));
+      setTodos(todos.filter((t) => t.id !== id));
     } catch (error) {
       console.error('Failed to delete todo:', error);
     }
@@ -55,11 +55,7 @@ function App() {
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
       <h1>Todo アプリケーション</h1>
       <TodoForm onSubmit={handleAddTodo} />
-      <TodoList
-        todos={todos}
-        onToggle={handleToggleTodo}
-        onDelete={handleDeleteTodo}
-      />
+      <TodoList todos={todos} onToggle={handleToggleTodo} onDelete={handleDeleteTodo} />
     </div>
   );
 }
