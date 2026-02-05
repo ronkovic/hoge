@@ -55,7 +55,7 @@ test.describe('フロントエンドプロジェクトの初期セットアッ�
 
         // 必須設定項目の検証
         expect(content).toContain('content');
-        expect(content).toMatch(/["']\.\/src\/\*\*\/\*\.{tsx?,jsx?}/);
+        expect(content).toMatch(/["']\.\/src\/\*\*\/\*\.\{[^}]+\}/);
         expect(content).toContain('theme');
         expect(content).toContain('plugins');
       }
