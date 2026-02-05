@@ -1,35 +1,67 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import { TodoList } from './components/TodoList';
+import { TodoForm } from './components/TodoForm';
+import { todoApi } from './api/todoApi';
+import type { Todo } from './types/todo';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  useEffect(() => {
+    loadTodos();
+  }, []);
+
+  const loadTodos = async () => {
+    try {
+      const data = await todoApi.getTodos();
+      setTodos(data);
+    } catch (error) {
+      console.error('Failed to load todos:', error);
+    }
+  };
+
+  const handleAddTodo = async (title: string) => {
+    try {
+      const newTodo = await todoApi.createTodo(title);
+      setTodos([...todos, newTodo]);
+    } catch (error) {
+      console.error('Failed to add todo:', error);
+    }
+  };
+
+  const handleToggleTodo = async (id: number) => {
+    try {
+      const todo = todos.find(t => t.id === id);
+      if (!todo) return;
+
+      const updatedTodo = await todoApi.updateTodo(id, !todo.completed);
+      setTodos(todos.map(t => t.id === id ? updatedTodo : t));
+    } catch (error) {
+      console.error('Failed to toggle todo:', error);
+    }
+  };
+
+  const handleDeleteTodo = async (id: number) => {
+    try {
+      await todoApi.deleteTodo(id);
+      setTodos(todos.filter(t => t.id !== id));
+    } catch (error) {
+      console.error('Failed to delete todo:', error);
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+      <h1>Todo アプリケーション</h1>
+      <TodoForm onSubmit={handleAddTodo} />
+      <TodoList
+        todos={todos}
+        onToggle={handleToggleTodo}
+        onDelete={handleDeleteTodo}
+      />
+    </div>
+  );
 }
 
-export default App
+export default App;
