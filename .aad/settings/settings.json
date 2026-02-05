@@ -44,6 +44,8 @@
       "Bash(rm -rf /)",
       "Bash(rm -rf ~)",
       "Bash(rm -rf /*)",
+      "Write(**/secrets/**)",
+      "Edit(**/secrets/**)",
       "Bash(curl * | sh)",
       "Bash(curl * | bash)",
       "Bash(wget * | sh)",
