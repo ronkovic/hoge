@@ -193,7 +193,9 @@ app.get('/api/articles', (req, res) => {
   res.status(200).json(articles);
 });
 
-// GET /api/articles/user/:userId - ユーザー別記事一覧 (より具体的なルートを先に定義)
+// IMPORTANT: より具体的なルート (/user/:userId) を先に定義することで、
+// 汎用的なルート (/:id) との競合を防ぐ
+// GET /api/articles/user/:userId - ユーザー別記事一覧
 app.get('/api/articles/user/:userId', (req, res) => {
   const userId = parseInt(req.params.userId);
   const userArticles = articles.filter(a => a.user_id === userId);
