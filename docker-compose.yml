@@ -1,0 +1,69 @@
+<<<<<<< HEAD
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: todo-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: todo_db
+=======
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: todoapp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+>>>>>>> feature/_20260205_153345-task-019
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+<<<<<<< HEAD
+      - ./backend/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+=======
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+>>>>>>> feature/_20260205_153345-task-019
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+<<<<<<< HEAD
+=======
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/todoapp
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/todos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    environment:
+      VITE_API_URL: http://localhost:3000
+    depends_on:
+      - backend
+
+>>>>>>> feature/_20260205_153345-task-019
+volumes:
+  postgres_data:
