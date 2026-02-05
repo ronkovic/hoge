@@ -1,8 +1,14 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
 # AAD Prototype
 
 プロジェクト初期構造
 =======
+=======
+>>>>>>> feature/_20260205_153345-task-020
+=======
+>>>>>>> feature/_20260205_153345-task-020
 # Todo アプリケーション
 
 Node.js、React、PostgreSQLで構築されたフルスタックTodoアプリケーション。
@@ -23,6 +29,26 @@ Node.js、React、PostgreSQLで構築されたフルスタックTodoアプリケ
 └── test/            # 統合テスト
 ```
 
+## アーキテクチャ
+
+システムアーキテクチャの構成は以下の通りです:
+
+```
+┌─────────────┐         ┌─────────────┐         ┌─────────────┐
+│  Frontend   │         │   Backend   │         │  Database   │
+│   (React)   │◄───────►│ (Express.js)│◄───────►│(PostgreSQL) │
+│ Port: 5173  │  HTTP   │ Port: 3001  │   SQL   │ Port: 5432  │
+└─────────────┘         └─────────────┘         └─────────────┘
+     │                       │
+     │                       │
+     ▼                       ▼
+ User Browser          REST API Server
+ - Todo UI              - GET /api/todos
+ - Form Input           - POST /api/todos
+ - State Mgmt           - PUT /api/todos/:id
+                        - DELETE /api/todos/:id
+```
+
 ## クイックスタート
 
 ### 前提条件
@@ -30,6 +56,27 @@ Node.js、React、PostgreSQLで構築されたフルスタックTodoアプリケ
 - Node.js (v18以上推奨)
 - PostgreSQL 16
 - npm
+- Docker & Docker Compose (オプション)
+
+### オプション: Docker Composeで一括起動
+
+Docker Composeを使用すると、全てのサービスを一度に起動できます:
+
+```bash
+# プロジェクトルートから実行
+docker compose up -d
+
+# または、設定ファイルを明示的に指定
+docker compose -f docker/docker-compose.yml up -d
+
+# ログを確認
+docker compose logs -f
+
+# 停止
+docker compose down
+```
+
+詳細は [docker/README.md](./docker/README.md) を参照してください。
 
 ### 1. データベースのセットアップ
 
@@ -195,6 +242,95 @@ DB_PORT=5432
 
 MIT
 
+## CI/CD
+
+このプロジェクトはGitHub Actionsを使用した継続的インテグレーション/デプロイメントをサポートしています:
+
+- **自動テスト**: プルリクエスト時に全テストが自動実行されます
+- **コード品質チェック**: ESLintによる静的解析が実行されます
+- **ビルド検証**: 本番ビルドが正常に完了することを確認します
+
+設定ファイルは `.github/workflows/` に配置されます。
+
+## デプロイ
+
+### 本番環境へのデプロイ
+
+#### Herokuへのデプロイ例
+
+```bash
+# Heroku CLIのインストール
+npm install -g heroku
+
+# ログイン
+heroku login
+
+# アプリケーション作成
+heroku create your-app-name
+
+# PostgreSQLアドオンの追加
+heroku addons:create heroku-postgresql:hobby-dev
+
+# 環境変数の設定
+heroku config:set NODE_ENV=production
+
+# デプロイ
+git push heroku main
+```
+
+#### Dockerを使用したデプロイ
+
+```bash
+# イメージのビルド
+docker build -t todo-app .
+
+# コンテナの起動
+docker run -p 3001:3001 --env-file .env todo-app
+```
+
+## セキュリティ
+
+### セキュリティベストプラクティス
+
+- **環境変数の管理**: `.env`ファイルは`.gitignore`に含まれており、Gitリポジトリにコミットされません
+- **認証情報の保護**: データベースパスワードやAPIキーは必ず環境変数で管理してください
+- **依存関係の更新**: 定期的に`npm audit`を実行し、脆弱性をチェックしてください
+- **HTTPS通信**: 本番環境では必ずHTTPSを使用してください
+- **入力検証**: ユーザー入力は常にサニタイズされています
+
+```bash
+# セキュリティ脆弱性のチェック
+cd backend && npm audit
+cd frontend && npm audit
+
+# 自動修正
+npm audit fix
+```
+
+## パフォーマンス最適化
+
+### フロントエンド最適化
+
+- **コード分割**: Viteの動的インポートを使用して必要なコードのみを読み込み
+- **バンドルサイズ削減**: 本番ビルド時に自動的に最適化されます
+- **キャッシング**: ブラウザキャッシュを活用した静的アセットの配信
+
+### バックエンド最適化
+
+- **データベース接続プーリング**: PostgreSQLコネクションプールを使用
+- **インデックス最適化**: 頻繁にクエリされるカラムにはインデックスを設定
+- **レスポンス圧縮**: Gzip圧縮を有効化してデータ転送量を削減
+
+```bash
+# パフォーマンス測定
+cd frontend
+npm run build
+npm run preview
+
+# バンドルサイズ分析
+npm run analyze
+```
+
 ## 貢献
 
 プルリクエストを歓迎します。大きな変更の場合は、まずissueを開いて変更内容を議論してください。
@@ -204,4 +340,10 @@ MIT
 - [Backend README](./backend/README.md) - バックエンドの詳細
 - [Frontend README](./frontend/README.md) - フロントエンドの詳細
 - [Database README](./database/README.md) - データベーススキーマの詳細
+<<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> feature/_20260205_153345-task-020
+=======
+>>>>>>> feature/_20260205_153345-task-020
+=======
 >>>>>>> feature/_20260205_153345-task-020
