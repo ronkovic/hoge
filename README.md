@@ -1,9 +1,12 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 # AAD Prototype
 
 プロジェクト初期構造
 =======
+=======
+>>>>>>> feature/_20260205_153345-task-020
 =======
 >>>>>>> feature/_20260205_153345-task-020
 # Todo アプリケーション
@@ -36,14 +39,14 @@ Node.js、React、PostgreSQLで構築されたフルスタックTodoアプリケ
 │   (React)   │◄───────►│ (Express.js)│◄───────►│(PostgreSQL) │
 │ Port: 5173  │  HTTP   │ Port: 3001  │   SQL   │ Port: 5432  │
 └─────────────┘         └─────────────┘         └─────────────┘
-      │                       │
-      │                       │
-      ▼                       ▼
-  User Browser          REST API Server
-  - Todo UI              - GET /api/todos
-  - Form Input           - POST /api/todos
-  - State Mgmt           - PUT /api/todos/:id
-                         - DELETE /api/todos/:id
+     │                       │
+     │                       │
+     ▼                       ▼
+ User Browser          REST API Server
+ - Todo UI              - GET /api/todos
+ - Form Input           - POST /api/todos
+ - State Mgmt           - PUT /api/todos/:id
+                        - DELETE /api/todos/:id
 ```
 
 ## クイックスタート
@@ -338,6 +341,9 @@ npm run analyze
 - [Frontend README](./frontend/README.md) - フロントエンドの詳細
 - [Database README](./database/README.md) - データベーススキーマの詳細
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> feature/_20260205_153345-task-020
+=======
 >>>>>>> feature/_20260205_153345-task-020
 =======
 >>>>>>> feature/_20260205_153345-task-020
