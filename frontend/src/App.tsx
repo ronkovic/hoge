@@ -9,17 +9,17 @@ function App() {
   const [todos, setTodos] = useState<Todo[]>([]);
 
   useEffect(() => {
+    const loadTodos = async () => {
+      try {
+        const data = await todoApi.getTodos();
+        setTodos(data);
+      } catch (error) {
+        console.error('Failed to load todos:', error);
+      }
+    };
+
     loadTodos();
   }, []);
-
-  const loadTodos = async () => {
-    try {
-      const data = await todoApi.getTodos();
-      setTodos(data);
-    } catch (error) {
-      console.error('Failed to load todos:', error);
-    }
-  };
 
   const handleAddTodo = async (title: string) => {
     try {
