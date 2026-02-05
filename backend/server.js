@@ -17,6 +17,9 @@ let nextId = 1;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> feature/_20260205_153345-task-008
 =======
 >>>>>>> feature/_20260205_153345-task-008
 // In-memory storage for users and tokens
@@ -37,6 +40,10 @@ let articles = [
   }
 ];
 let nextArticleId = 2;
+
+// In-memory storage for comments
+let comments = [];
+let nextCommentId = 1;
 
 // Auth middleware
 const authMiddleware = (req, res, next) => {
@@ -122,6 +129,7 @@ app.post('/api/auth/logout', authMiddleware, (req, res) => {
   res.status(200).json({ message: 'Logged out successfully' });
 });
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 // In-memory storage for articles
 let articles = [
@@ -142,6 +150,8 @@ let nextArticleId = 2;
 let comments = [];
 let nextCommentId = 1;
 >>>>>>> feature/_20260205_153345-task-009
+=======
+>>>>>>> feature/_20260205_153345-task-008
 =======
 >>>>>>> feature/_20260205_153345-task-008
 
@@ -212,13 +222,14 @@ app.delete('/todos/:id', (req, res) => {
   res.status(200).json({ message: 'Todo deleted successfully' });
 });
 
-<<<<<<< HEAD
 // GET /api/articles - すべての記事を取得
 app.get('/api/articles', (req, res) => {
   res.status(200).json(articles);
 });
 
-// GET /api/articles/user/:userId - ユーザー別記事一覧 (より具体的なルートを先に定義)
+// IMPORTANT: より具体的なルート (/user/:userId) を先に定義することで、
+// 汎用的なルート (/:id) との競合を防ぐ
+// GET /api/articles/user/:userId - ユーザー別記事一覧
 app.get('/api/articles/user/:userId', (req, res) => {
   const userId = parseInt(req.params.userId);
   const userArticles = articles.filter(a => a.user_id === userId);
@@ -313,6 +324,7 @@ app.delete('/api/articles/:id', (req, res) => {
 });
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // GET /api/articles/user/:userId - ユーザー別記事一覧
 app.get('/api/articles/user/:userId', (req, res) => {
   const userId = parseInt(req.params.userId);
@@ -320,6 +332,8 @@ app.get('/api/articles/user/:userId', (req, res) => {
   res.status(200).json(userArticles);
 });
 =======
+=======
+>>>>>>> feature/_20260205_153345-task-008
 // GET /comments - すべてのコメントを取得
 app.get('/comments', (req, res) => {
   // 作成日時の降順でソート
@@ -396,8 +410,11 @@ export function resetComments() {
   comments = [];
   nextCommentId = 1;
 }
+<<<<<<< HEAD
 >>>>>>> feature/_20260205_153345-task-009
 
+=======
+>>>>>>> feature/_20260205_153345-task-008
 =======
 >>>>>>> feature/_20260205_153345-task-008
 // サーバー起動（直接実行時のみ）
