@@ -1,0 +1,319 @@
+{
+  "run_id": "_20260205_151136",
+  "parent_branch": "feature/_20260205_151136",
+  "tasks": [
+    {
+      "task_id": "task-001",
+      "title": "プロジェクト基本構造の作成",
+      "description": "ルートディレクトリとREADME.mdの作成、各サブディレクトリ（backend, frontend, database, shared, docker）の作成",
+      "files_to_modify": [
+        "README.md",
+        "backend/README.md",
+        "frontend/README.md",
+        "database/README.md",
+        "shared/README.md"
+      ],
+      "depends_on": [],
+      "priority": 1
+    },
+    {
+      "task_id": "task-002",
+      "title": "共通型定義の実装",
+      "description": "shared/types/配下にUser.ts, Post.ts, Comment.ts, ApiResponse.tsを実装。フロントエンドとバックエンドで共通使用する型定義を作成",
+      "files_to_modify": [
+        "shared/types/User.ts",
+        "shared/types/Post.ts",
+        "shared/types/Comment.ts",
+        "shared/types/ApiResponse.ts",
+        "shared/types/index.ts",
+        "shared/package.json",
+        "shared/tsconfig.json"
+      ],
+      "depends_on": ["task-001"],
+      "priority": 1
+    },
+    {
+      "task_id": "task-003",
+      "title": "データベーススキーマとマイグレーションの作成",
+      "description": "PostgreSQL用のスキーマ定義（users, posts, commentsテーブル）、マイグレーションファイル、マイグレーション実行スクリプトの作成",
+      "files_to_modify": [
+        "database/schema.sql",
+        "database/migrations/001_create_users_table.sql",
+        "database/migrations/002_create_posts_table.sql",
+        "database/migrations/003_create_comments_table.sql",
+        "database/migrations/migrate.sh",
+        "database/README.md"
+      ],
+      "depends_on": ["task-001"],
+      "priority": 1
+    },
+    {
+      "task_id": "task-004",
+      "title": "バックエンドプロジェクトのセットアップ",
+      "description": "Node.js + Express + TypeScriptの基本構造、package.json、tsconfig.json、ESLint/Prettier設定、ディレクトリ構造の作成",
+      "files_to_modify": [
+        "backend/package.json",
+        "backend/tsconfig.json",
+        "backend/.eslintrc.json",
+        "backend/.prettierrc",
+        "backend/.env.example",
+        "backend/src/index.ts",
+        "backend/src/config/database.ts",
+        "backend/src/config/jwt.ts",
+        "backend/README.md"
+      ],
+      "depends_on": ["task-001", "task-002"],
+      "priority": 2
+    },
+    {
+      "task_id": "task-005",
+      "title": "バックエンド認証ミドルウェアとユーティリティの実装",
+      "description": "JWT認証ミドルウェア、パスワードハッシュ化ユーティリティ、エラーハンドリングミドルウェア、バリデーションミドルウェアの実装",
+      "files_to_modify": [
+        "backend/src/middleware/auth.ts",
+        "backend/src/middleware/errorHandler.ts",
+        "backend/src/middleware/validator.ts",
+        "backend/src/utils/password.ts",
+        "backend/src/utils/jwt.ts"
+      ],
+      "depends_on": ["task-004"],
+      "priority": 2
+    },
+    {
+      "task_id": "task-006",
+      "title": "バックエンドデータベースモデルの実装",
+      "description": "PostgreSQLとのやり取りを行うモデル層（User, Post, Commentモデル）の実装",
+      "files_to_modify": [
+        "backend/src/models/User.ts",
+        "backend/src/models/Post.ts",
+        "backend/src/models/Comment.ts",
+        "backend/src/models/index.ts"
+      ],
+      "depends_on": ["task-004", "task-005"],
+      "priority": 2
+    },
+    {
+      "task_id": "task-007",
+      "title": "バックエンド認証APIの実装",
+      "description": "認証エンドポイント（register, login, logout, me）のコントローラー、サービス、ルートの実装",
+      "files_to_modify": [
+        "backend/src/controllers/authController.ts",
+        "backend/src/services/authService.ts",
+        "backend/src/routes/authRoutes.ts",
+        "backend/src/routes/index.ts"
+      ],
+      "depends_on": ["task-005", "task-006"],
+      "priority": 3
+    },
+    {
+      "task_id": "task-008",
+      "title": "バックエンド記事APIの実装",
+      "description": "記事エンドポイント（一覧、詳細、作成、更新、削除、ユーザー別一覧）のコントローラー、サービス、ルートの実装",
+      "files_to_modify": [
+        "backend/src/controllers/postController.ts",
+        "backend/src/services/postService.ts",
+        "backend/src/routes/postRoutes.ts",
+        "backend/src/routes/index.ts"
+      ],
+      "depends_on": ["task-007"],
+      "priority": 3
+    },
+    {
+      "task_id": "task-009",
+      "title": "バックエンドコメントAPIの実装",
+      "description": "コメントエンドポイント（一覧、投稿、削除）のコントローラー、サービス、ルートの実装",
+      "files_to_modify": [
+        "backend/src/controllers/commentController.ts",
+        "backend/src/services/commentService.ts",
+        "backend/src/routes/commentRoutes.ts",
+        "backend/src/routes/index.ts"
+      ],
+      "depends_on": ["task-008"],
+      "priority": 3
+    },
+    {
+      "task_id": "task-010",
+      "title": "バックエンドAPIのユニットテスト実装",
+      "description": "Jest設定、認証・記事・コメントAPIの主要なエンドポイントのユニットテストと統合テストの実装",
+      "files_to_modify": [
+        "backend/jest.config.js",
+        "backend/tests/auth.test.ts",
+        "backend/tests/posts.test.ts",
+        "backend/tests/comments.test.ts",
+        "backend/tests/setup.ts",
+        "backend/package.json"
+      ],
+      "depends_on": ["task-009"],
+      "priority": 4
+    },
+    {
+      "task_id": "task-011",
+      "title": "フロントエンドプロジェクトのセットアップ",
+      "description": "Vite + React + TypeScript + TailwindCSSの基本構造、package.json、tsconfig.json、vite.config.ts、TailwindCSS設定の作成",
+      "files_to_modify": [
+        "frontend/package.json",
+        "frontend/tsconfig.json",
+        "frontend/vite.config.ts",
+        "frontend/tailwind.config.js",
+        "frontend/postcss.config.js",
+        "frontend/index.html",
+        "frontend/src/main.tsx",
+        "frontend/src/App.tsx",
+        "frontend/src/index.css",
+        "frontend/.eslintrc.json",
+        "frontend/.prettierrc",
+        "frontend/README.md"
+      ],
+      "depends_on": ["task-001", "task-002"],
+      "priority": 2
+    },
+    {
+      "task_id": "task-012",
+      "title": "フロントエンドAPI連携サービスの実装",
+      "description": "axios設定、API呼び出し関数（認証、記事、コメント）、エラーハンドリングの実装",
+      "files_to_modify": [
+        "frontend/src/services/api.ts",
+        "frontend/src/services/authApi.ts",
+        "frontend/src/services/postApi.ts",
+        "frontend/src/services/commentApi.ts",
+        "frontend/src/utils/errorHandler.ts"
+      ],
+      "depends_on": ["task-011"],
+      "priority": 3
+    },
+    {
+      "task_id": "task-013",
+      "title": "フロントエンド状態管理の実装",
+      "description": "Zustandによる認証状態、記事状態の管理ストアの実装",
+      "files_to_modify": [
+        "frontend/src/store/authStore.ts",
+        "frontend/src/store/postStore.ts",
+        "frontend/src/store/index.ts"
+      ],
+      "depends_on": ["task-012"],
+      "priority": 3
+    },
+    {
+      "task_id": "task-014",
+      "title": "フロントエンド共通コンポーネントの実装",
+      "description": "Header, Footer, Button, Input, Card等の共通コンポーネントの実装",
+      "files_to_modify": [
+        "frontend/src/components/common/Header.tsx",
+        "frontend/src/components/common/Footer.tsx",
+        "frontend/src/components/common/Button.tsx",
+        "frontend/src/components/common/Input.tsx",
+        "frontend/src/components/common/Card.tsx",
+        "frontend/src/components/common/Loading.tsx",
+        "frontend/src/components/common/ErrorMessage.tsx",
+        "frontend/src/components/common/index.ts"
+      ],
+      "depends_on": ["task-011"],
+      "priority": 3
+    },
+    {
+      "task_id": "task-015",
+      "title": "フロントエンド認証コンポーネントの実装",
+      "description": "LoginForm, RegisterForm, ProtectedRouteの実装",
+      "files_to_modify": [
+        "frontend/src/components/auth/LoginForm.tsx",
+        "frontend/src/components/auth/RegisterForm.tsx",
+        "frontend/src/components/auth/ProtectedRoute.tsx",
+        "frontend/src/components/auth/index.ts"
+      ],
+      "depends_on": ["task-013", "task-014"],
+      "priority": 4
+    },
+    {
+      "task_id": "task-016",
+      "title": "フロントエンド記事コンポーネントの実装",
+      "description": "PostCard, PostList, PostForm, PostDetailの実装",
+      "files_to_modify": [
+        "frontend/src/components/posts/PostCard.tsx",
+        "frontend/src/components/posts/PostList.tsx",
+        "frontend/src/components/posts/PostForm.tsx",
+        "frontend/src/components/posts/PostDetail.tsx",
+        "frontend/src/components/posts/index.ts"
+      ],
+      "depends_on": ["task-014"],
+      "priority": 4
+    },
+    {
+      "task_id": "task-017",
+      "title": "フロントエンドコメントコンポーネントの実装",
+      "description": "CommentList, CommentFormの実装",
+      "files_to_modify": [
+        "frontend/src/components/comments/CommentList.tsx",
+        "frontend/src/components/comments/CommentForm.tsx",
+        "frontend/src/components/comments/index.ts"
+      ],
+      "depends_on": ["task-014"],
+      "priority": 4
+    },
+    {
+      "task_id": "task-018",
+      "title": "フロントエンドページコンポーネントの実装（認証系）",
+      "description": "LoginPage, RegisterPageの実装",
+      "files_to_modify": [
+        "frontend/src/pages/LoginPage.tsx",
+        "frontend/src/pages/RegisterPage.tsx"
+      ],
+      "depends_on": ["task-015"],
+      "priority": 5
+    },
+    {
+      "task_id": "task-019",
+      "title": "フロントエンドページコンポーネントの実装（記事系）",
+      "description": "HomePage（記事一覧）, PostDetailPage, DashboardPage, NewPostPage, EditPostPageの実装",
+      "files_to_modify": [
+        "frontend/src/pages/HomePage.tsx",
+        "frontend/src/pages/PostDetailPage.tsx",
+        "frontend/src/pages/DashboardPage.tsx",
+        "frontend/src/pages/NewPostPage.tsx",
+        "frontend/src/pages/EditPostPage.tsx",
+        "frontend/src/pages/UserProfilePage.tsx",
+        "frontend/src/pages/index.ts"
+      ],
+      "depends_on": ["task-016", "task-017"],
+      "priority": 5
+    },
+    {
+      "task_id": "task-020",
+      "title": "フロントエンドルーティングの実装",
+      "description": "React Routerによるルーティング設定、ProtectedRouteの適用、App.tsxの更新",
+      "files_to_modify": [
+        "frontend/src/App.tsx",
+        "frontend/src/routes.tsx"
+      ],
+      "depends_on": ["task-018", "task-019"],
+      "priority": 5
+    },
+    {
+      "task_id": "task-021",
+      "title": "Docker環境の構築",
+      "description": "docker-compose.yml、backend用Dockerfile、frontend用Dockerfile、PostgreSQL設定の作成",
+      "files_to_modify": [
+        "docker/docker-compose.yml",
+        "docker/backend.Dockerfile",
+        "docker/frontend.Dockerfile",
+        "docker/.env.example"
+      ],
+      "depends_on": ["task-010", "task-020"],
+      "priority": 6
+    },
+    {
+      "task_id": "task-022",
+      "title": "プロジェクトドキュメントの作成",
+      "description": "ルートREADME.md（セットアップ手順）、APIドキュメント、各ディレクトリのREADMEの更新",
+      "files_to_modify": [
+        "README.md",
+        "backend/README.md",
+        "frontend/README.md",
+        "database/README.md",
+        "docs/API.md",
+        "docs/SETUP.md"
+      ],
+      "depends_on": ["task-021"],
+      "priority": 7
+    }
+  ]
+}
