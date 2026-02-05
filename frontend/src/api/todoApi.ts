@@ -21,7 +21,9 @@ export const todoApi = {
     if (USE_MOCK) {
       const newTodo: Todo = { id: nextId++, title, completed: false };
       mockTodos.push(newTodo);
-      axios.post<Todo>(`${API_BASE_URL}/todos`, { title }).catch(() => {});
+      axios.post<Todo>(`${API_BASE_URL}/todos`, { title }).catch((error) => {
+        console.debug('Mock mode: API request ignored', error);
+      });
       return Promise.resolve(newTodo);
     }
     const response = await axios.post<Todo>(`${API_BASE_URL}/todos`, { title });
@@ -30,10 +32,12 @@ export const todoApi = {
 
   async updateTodo(id: number, completed: boolean): Promise<Todo> {
     if (USE_MOCK) {
-      const todo = mockTodos.find(t => t.id === id);
+      const todo = mockTodos.find((t) => t.id === id);
       if (!todo) throw new Error('Todo not found');
       todo.completed = completed;
-      axios.put<Todo>(`${API_BASE_URL}/todos/${id}`, { completed }).catch(() => {});
+      axios.put<Todo>(`${API_BASE_URL}/todos/${id}`, { completed }).catch((error) => {
+        console.debug('Mock mode: API request ignored', error);
+      });
       return Promise.resolve({ ...todo });
     }
     const response = await axios.put<Todo>(`${API_BASE_URL}/todos/${id}`, { completed });
@@ -42,11 +46,13 @@ export const todoApi = {
 
   async deleteTodo(id: number): Promise<void> {
     if (USE_MOCK) {
-      const index = mockTodos.findIndex(t => t.id === id);
+      const index = mockTodos.findIndex((t) => t.id === id);
       if (index !== -1) {
         mockTodos.splice(index, 1);
       }
-      axios.delete(`${API_BASE_URL}/todos/${id}`).catch(() => {});
+      axios.delete(`${API_BASE_URL}/todos/${id}`).catch((error) => {
+        console.debug('Mock mode: API request ignored', error);
+      });
       return Promise.resolve();
     }
     await axios.delete(`${API_BASE_URL}/todos/${id}`);

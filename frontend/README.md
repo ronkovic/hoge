@@ -32,7 +32,7 @@ npm install
 npm run dev
 ```
 
-アプリケーションは http://localhost:3000 で起動します。
+アプリケーションは http://localhost:5173 で起動します。
 
 **注意**: 現在、バックエンドAPIは未実装のため、モックデータで動作します。バックエンドが利用可能になった場合は、`src/api/todoApi.ts`の`USE_MOCK`フラグを`false`に変更してください。
 

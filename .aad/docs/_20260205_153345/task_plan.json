@@ -1,0 +1,293 @@
+{
+  "run_id": "_20260205_153345",
+  "parent_branch": "feature/_20260205_153345",
+  "tasks": [
+    {
+      "task_id": "task-001",
+      "title": "プロジェクト初期構造とディレクトリ構成の作成",
+      "description": "ルートディレクトリの構造を作成し、各サブディレクトリの基本構成を整備する。backend/, frontend/, database/, shared/, docker/ のディレクトリとREADME.mdを作成。",
+      "files_to_modify": [
+        "backend/README.md",
+        "frontend/README.md",
+        "database/README.md",
+        "shared/README.md",
+        "README.md"
+      ],
+      "depends_on": [],
+      "priority": 1
+    },
+    {
+      "task_id": "task-002",
+      "title": "共通型定義の実装",
+      "description": "shared/types/配下にバックエンドとフロントエンドで共通利用する型定義を実装。User.ts, Post.ts, Comment.ts, ApiResponse.ts を作成。",
+      "files_to_modify": [
+        "shared/types/User.ts",
+        "shared/types/Post.ts",
+        "shared/types/Comment.ts",
+        "shared/types/ApiResponse.ts",
+        "shared/types/index.ts"
+      ],
+      "depends_on": ["task-001"],
+      "priority": 1
+    },
+    {
+      "task_id": "task-003",
+      "title": "データベーススキーマとマイグレーションの作成",
+      "description": "PostgreSQLのスキーマ定義とマイグレーションファイルを作成。users, posts, commentsテーブルの作成マイグレーション、マイグレーション実行スクリプトを実装。",
+      "files_to_modify": [
+        "database/schema.sql",
+        "database/migrations/001_create_users_table.sql",
+        "database/migrations/002_create_posts_table.sql",
+        "database/migrations/003_create_comments_table.sql",
+        "database/migrations/run-migrations.sh"
+      ],
+      "depends_on": ["task-001"],
+      "priority": 2
+    },
+    {
+      "task_id": "task-004",
+      "title": "バックエンドプロジェクトの初期セットアップ",
+      "description": "バックエンドのpackage.json, tsconfig.json, ESLint, Prettierの設定を作成。必要な依存パッケージの定義とディレクトリ構造の作成。",
+      "files_to_modify": [
+        "backend/package.json",
+        "backend/tsconfig.json",
+        "backend/.eslintrc.json",
+        "backend/.prettierrc.json",
+        "backend/src/index.ts"
+      ],
+      "depends_on": ["task-001"],
+      "priority": 2
+    },
+    {
+      "task_id": "task-005",
+      "title": "バックエンドのデータベース接続とモデル実装",
+      "description": "PostgreSQLへの接続設定と、User, Post, Commentのモデルを実装。pg-promiseまたは類似ライブラリを使用。",
+      "files_to_modify": [
+        "backend/src/models/db.ts",
+        "backend/src/models/User.ts",
+        "backend/src/models/Post.ts",
+        "backend/src/models/Comment.ts"
+      ],
+      "depends_on": ["task-002", "task-004"],
+      "priority": 3
+    },
+    {
+      "task_id": "task-006",
+      "title": "バックエンドのユーティリティとミドルウェアの実装",
+      "description": "JWT認証ミドルウェア、エラーハンドリングミドルウェア、バリデーションヘルパー、パスワードハッシュ化ユーティリティを実装。",
+      "files_to_modify": [
+        "backend/src/middleware/auth.ts",
+        "backend/src/middleware/errorHandler.ts",
+        "backend/src/middleware/validation.ts",
+        "backend/src/utils/password.ts",
+        "backend/src/utils/jwt.ts"
+      ],
+      "depends_on": ["task-004"],
+      "priority": 3
+    },
+    {
+      "task_id": "task-007",
+      "title": "認証APIエンドポイントの実装",
+      "description": "認証関連のエンドポイント（register, login, logout, me）を実装。コントローラー、ルート、サービス層を含む。",
+      "files_to_modify": [
+        "backend/src/controllers/authController.ts",
+        "backend/src/routes/authRoutes.ts",
+        "backend/src/services/authService.ts",
+        "backend/src/index.ts"
+      ],
+      "depends_on": ["task-005", "task-006"],
+      "priority": 4
+    },
+    {
+      "task_id": "task-008",
+      "title": "記事APIエンドポイントの実装",
+      "description": "記事関連のエンドポイント（一覧、詳細、作成、更新、削除、ユーザー別一覧）を実装。コントローラー、ルート、サービス層を含む。",
+      "files_to_modify": [
+        "backend/src/controllers/postController.ts",
+        "backend/src/routes/postRoutes.ts",
+        "backend/src/services/postService.ts",
+        "backend/src/index.ts"
+      ],
+      "depends_on": ["task-005", "task-006"],
+      "priority": 4
+    },
+    {
+      "task_id": "task-009",
+      "title": "コメントAPIエンドポイントの実装",
+      "description": "コメント関連のエンドポイント（一覧、投稿、削除）を実装。コントローラー、ルート、サービス層を含む。",
+      "files_to_modify": [
+        "backend/src/controllers/commentController.ts",
+        "backend/src/routes/commentRoutes.ts",
+        "backend/src/services/commentService.ts",
+        "backend/src/index.ts"
+      ],
+      "depends_on": ["task-005", "task-006"],
+      "priority": 4
+    },
+    {
+      "task_id": "task-010",
+      "title": "バックエンドのテスト実装",
+      "description": "Jestの設定と主要なエンドポイントのユニットテスト・統合テストを実装。認証、記事、コメントのテストを含む。",
+      "files_to_modify": [
+        "backend/jest.config.js",
+        "backend/tests/auth.test.ts",
+        "backend/tests/posts.test.ts",
+        "backend/tests/comments.test.ts",
+        "backend/tests/setup.ts"
+      ],
+      "depends_on": ["task-007", "task-008", "task-009"],
+      "priority": 5
+    },
+    {
+      "task_id": "task-011",
+      "title": "フロントエンドプロジェクトの初期セットアップ",
+      "description": "Viteでフロントエンドプロジェクトを作成。package.json, tsconfig.json, TailwindCSS, ESLint, Prettierの設定を実装。",
+      "files_to_modify": [
+        "frontend/package.json",
+        "frontend/tsconfig.json",
+        "frontend/vite.config.ts",
+        "frontend/tailwind.config.js",
+        "frontend/postcss.config.js",
+        "frontend/.eslintrc.json",
+        "frontend/.prettierrc.json",
+        "frontend/src/main.tsx",
+        "frontend/src/App.tsx",
+        "frontend/index.html"
+      ],
+      "depends_on": ["task-001"],
+      "priority": 2
+    },
+    {
+      "task_id": "task-012",
+      "title": "フロントエンドのルーティング設定",
+      "description": "React Routerの設定とページコンポーネントの基本構造を作成。ProtectedRouteコンポーネントも実装。",
+      "files_to_modify": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/common/ProtectedRoute.tsx",
+        "frontend/src/pages/HomePage.tsx",
+        "frontend/src/pages/PostDetailPage.tsx",
+        "frontend/src/pages/LoginPage.tsx",
+        "frontend/src/pages/RegisterPage.tsx",
+        "frontend/src/pages/DashboardPage.tsx",
+        "frontend/src/pages/CreatePostPage.tsx",
+        "frontend/src/pages/EditPostPage.tsx",
+        "frontend/src/pages/UserProfilePage.tsx"
+      ],
+      "depends_on": ["task-011"],
+      "priority": 3
+    },
+    {
+      "task_id": "task-013",
+      "title": "フロントエンドの状態管理とAPI連携の実装",
+      "description": "Zustandでの状態管理ストアとaxiosを使用したAPIクライアントを実装。認証状態管理を含む。",
+      "files_to_modify": [
+        "frontend/src/store/authStore.ts",
+        "frontend/src/store/postStore.ts",
+        "frontend/src/services/api.ts",
+        "frontend/src/services/authApi.ts",
+        "frontend/src/services/postApi.ts",
+        "frontend/src/services/commentApi.ts"
+      ],
+      "depends_on": ["task-002", "task-011"],
+      "priority": 3
+    },
+    {
+      "task_id": "task-014",
+      "title": "共通コンポーネントの実装",
+      "description": "Header, Footer, Button, Input, Card等の共通コンポーネントを実装。TailwindCSSでスタイリング。",
+      "files_to_modify": [
+        "frontend/src/components/common/Header.tsx",
+        "frontend/src/components/common/Footer.tsx",
+        "frontend/src/components/common/Button.tsx",
+        "frontend/src/components/common/Input.tsx",
+        "frontend/src/components/common/Card.tsx",
+        "frontend/src/components/common/LoadingSpinner.tsx"
+      ],
+      "depends_on": ["task-011"],
+      "priority": 4
+    },
+    {
+      "task_id": "task-015",
+      "title": "認証関連コンポーネントの実装",
+      "description": "LoginForm, RegisterFormなど認証関連のコンポーネントを実装。",
+      "files_to_modify": [
+        "frontend/src/components/auth/LoginForm.tsx",
+        "frontend/src/components/auth/RegisterForm.tsx",
+        "frontend/src/pages/LoginPage.tsx",
+        "frontend/src/pages/RegisterPage.tsx"
+      ],
+      "depends_on": ["task-012", "task-013", "task-014"],
+      "priority": 5
+    },
+    {
+      "task_id": "task-016",
+      "title": "記事関連コンポーネントの実装",
+      "description": "PostCard, PostList, PostForm等の記事関連コンポーネントを実装。",
+      "files_to_modify": [
+        "frontend/src/components/posts/PostCard.tsx",
+        "frontend/src/components/posts/PostList.tsx",
+        "frontend/src/components/posts/PostForm.tsx",
+        "frontend/src/components/posts/PostDetail.tsx",
+        "frontend/src/pages/HomePage.tsx",
+        "frontend/src/pages/PostDetailPage.tsx",
+        "frontend/src/pages/CreatePostPage.tsx",
+        "frontend/src/pages/EditPostPage.tsx"
+      ],
+      "depends_on": ["task-012", "task-013", "task-014"],
+      "priority": 5
+    },
+    {
+      "task_id": "task-017",
+      "title": "コメント関連コンポーネントの実装",
+      "description": "CommentList, CommentForm等のコメント関連コンポーネントを実装。",
+      "files_to_modify": [
+        "frontend/src/components/comments/CommentList.tsx",
+        "frontend/src/components/comments/CommentForm.tsx",
+        "frontend/src/components/comments/CommentItem.tsx",
+        "frontend/src/pages/PostDetailPage.tsx"
+      ],
+      "depends_on": ["task-012", "task-013", "task-014"],
+      "priority": 5
+    },
+    {
+      "task_id": "task-018",
+      "title": "ダッシュボードとユーザープロフィールページの実装",
+      "description": "ダッシュボードとユーザープロフィールページの実装を完成させる。",
+      "files_to_modify": [
+        "frontend/src/pages/DashboardPage.tsx",
+        "frontend/src/pages/UserProfilePage.tsx",
+        "frontend/src/components/dashboard/UserPosts.tsx"
+      ],
+      "depends_on": ["task-012", "task-013", "task-014", "task-016"],
+      "priority": 6
+    },
+    {
+      "task_id": "task-019",
+      "title": "Docker環境の構築",
+      "description": "Docker ComposeとDockerfileを作成。postgres, backend, frontendサービスの定義とマルチステージビルドの実装。",
+      "files_to_modify": [
+        "docker/docker-compose.yml",
+        "docker/backend.Dockerfile",
+        "docker/frontend.Dockerfile",
+        "docker/.env.example"
+      ],
+      "depends_on": ["task-004", "task-011"],
+      "priority": 7
+    },
+    {
+      "task_id": "task-020",
+      "title": "プロジェクト全体のREADMEとドキュメント作成",
+      "description": "ルートREADME.mdを完成させ、セットアップ手順、APIドキュメント、使用方法を記載。",
+      "files_to_modify": [
+        "README.md",
+        "backend/README.md",
+        "frontend/README.md",
+        "database/README.md",
+        "docs/API.md",
+        "docs/SETUP.md"
+      ],
+      "depends_on": ["task-001"],
+      "priority": 8
+    }
+  ]
+}
