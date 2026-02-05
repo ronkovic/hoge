@@ -16,10 +16,34 @@ let nextId = 1;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> feature/_20260205_153345-task-008
+=======
+>>>>>>> feature/_20260205_153345-task-008
 // In-memory storage for users and tokens
 let users = [];
 let userNextId = 1;
 let tokens = new Map();
+
+// In-memory storage for articles
+let articles = [
+  {
+    id: 1,
+    user_id: 1,
+    title: 'サンプル記事',
+    content: 'これはサンプル記事の本文です。',
+    published: false,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  }
+];
+let nextArticleId = 2;
+
+// In-memory storage for comments
+let comments = [];
+let nextCommentId = 1;
 
 // Auth middleware
 const authMiddleware = (req, res, next) => {
@@ -104,6 +128,8 @@ app.post('/api/auth/logout', authMiddleware, (req, res) => {
 
   res.status(200).json({ message: 'Logged out successfully' });
 });
+<<<<<<< HEAD
+<<<<<<< HEAD
 =======
 // In-memory storage for articles
 let articles = [
@@ -124,6 +150,10 @@ let nextArticleId = 2;
 let comments = [];
 let nextCommentId = 1;
 >>>>>>> feature/_20260205_153345-task-009
+=======
+>>>>>>> feature/_20260205_153345-task-008
+=======
+>>>>>>> feature/_20260205_153345-task-008
 
 // GET /todos - すべてのTodoを取得
 app.get('/todos', (req, res) => {
@@ -192,10 +222,18 @@ app.delete('/todos/:id', (req, res) => {
   res.status(200).json({ message: 'Todo deleted successfully' });
 });
 
-<<<<<<< HEAD
 // GET /api/articles - すべての記事を取得
 app.get('/api/articles', (req, res) => {
   res.status(200).json(articles);
+});
+
+// IMPORTANT: より具体的なルート (/user/:userId) を先に定義することで、
+// 汎用的なルート (/:id) との競合を防ぐ
+// GET /api/articles/user/:userId - ユーザー別記事一覧
+app.get('/api/articles/user/:userId', (req, res) => {
+  const userId = parseInt(req.params.userId);
+  const userArticles = articles.filter(a => a.user_id === userId);
+  res.status(200).json(userArticles);
 });
 
 // GET /api/articles/:id - 特定の記事を取得
@@ -285,6 +323,8 @@ app.delete('/api/articles/:id', (req, res) => {
   res.status(200).json({ message: 'Article deleted successfully' });
 });
 
+<<<<<<< HEAD
+<<<<<<< HEAD
 // GET /api/articles/user/:userId - ユーザー別記事一覧
 app.get('/api/articles/user/:userId', (req, res) => {
   const userId = parseInt(req.params.userId);
@@ -292,6 +332,8 @@ app.get('/api/articles/user/:userId', (req, res) => {
   res.status(200).json(userArticles);
 });
 =======
+=======
+>>>>>>> feature/_20260205_153345-task-008
 // GET /comments - すべてのコメントを取得
 app.get('/comments', (req, res) => {
   // 作成日時の降順でソート
@@ -368,8 +410,13 @@ export function resetComments() {
   comments = [];
   nextCommentId = 1;
 }
+<<<<<<< HEAD
 >>>>>>> feature/_20260205_153345-task-009
 
+=======
+>>>>>>> feature/_20260205_153345-task-008
+=======
+>>>>>>> feature/_20260205_153345-task-008
 // サーバー起動（直接実行時のみ）
 // import.meta.urlを使用してモジュールが直接実行されたかを判定
 const __filename = fileURLToPath(import.meta.url);
