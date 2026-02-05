@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import App from '../App';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { LoginPage } from '../pages/LoginPage';
+import { TodosPage } from '../pages/TodosPage';
+import { DashboardPage } from '../pages/DashboardPage';
+import { NotFoundPage } from '../pages/NotFoundPage';
+import { ProtectedRoute } from '../components/ProtectedRoute';
 
 describe('App', () => {
   describe('ルーティング設定', () => {
@@ -36,11 +41,31 @@ describe('App', () => {
         localStorage.setItem('authToken', authToken);
       }
 
-      // 初期パスを設定
-      window.history.pushState({}, '', path);
-
       // Appコンポーネントをレンダリング
-      render(<App />);
+      render(
+        <MemoryRouter initialEntries={[path]}>
+          <Routes>
+            <Route path="/" element={<LoginPage />} />
+            <Route
+              path="/todos"
+              element={
+                <ProtectedRoute>
+                  <TodosPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </MemoryRouter>
+      );
 
       // 期待されるページが表示されることを確認
       expect(screen.getByTestId(testId)).toBeInTheDocument();
@@ -82,11 +107,31 @@ describe('App', () => {
         localStorage.setItem('authToken', authToken);
       }
 
-      // 初期パスを設定
-      window.history.pushState({}, '', path);
-
       // Appコンポーネントをレンダリング
-      render(<App />);
+      render(
+        <MemoryRouter initialEntries={[path]}>
+          <Routes>
+            <Route path="/" element={<LoginPage />} />
+            <Route
+              path="/todos"
+              element={
+                <ProtectedRoute>
+                  <TodosPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </MemoryRouter>
+      );
 
       // 期待されるページが表示されることを確認
       expect(screen.getByTestId(testId)).toBeInTheDocument();
@@ -108,11 +153,31 @@ describe('App', () => {
       localStorage.clear();
       sessionStorage.clear();
 
-      // 初期パスを設定
-      window.history.pushState({}, '', path);
-
       // Appコンポーネントをレンダリング
-      render(<App />);
+      render(
+        <MemoryRouter initialEntries={[path]}>
+          <Routes>
+            <Route path="/" element={<LoginPage />} />
+            <Route
+              path="/todos"
+              element={
+                <ProtectedRoute>
+                  <TodosPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </MemoryRouter>
+      );
 
       // sessionStorageにリダイレクト先が保存されていることを確認
       expect(sessionStorage.getItem('redirectAfterLogin')).toBe(path);
