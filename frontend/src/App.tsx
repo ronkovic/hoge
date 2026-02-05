@@ -8,6 +8,7 @@ import './App.css';
 
 function App() {
 <<<<<<< HEAD
+<<<<<<< HEAD
   const [todos, setTodos] = useState<Todo[]>([]);
 
   useEffect(() => {
@@ -60,6 +61,8 @@ function App() {
       <TodoList todos={todos} onToggle={handleToggleTodo} onDelete={handleDeleteTodo} />
     </div>
 =======
+=======
+>>>>>>> feature/_20260205_153345-task-012
   return (
     <BrowserRouter>
       <Routes>
@@ -83,6 +86,9 @@ function App() {
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
+<<<<<<< HEAD
+>>>>>>> feature/_20260205_153345-task-012
+=======
 >>>>>>> feature/_20260205_153345-task-012
   );
 }
