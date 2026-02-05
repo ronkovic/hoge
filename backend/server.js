@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 
-// In-memory storage for testing (最小限の実装)
+// In-memory storage for todos
 let todos = [];
 let nextId = 1;
 
