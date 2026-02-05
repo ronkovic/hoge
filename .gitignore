@@ -1,0 +1,6 @@
+# Claude CLI
+.claude/
+.aad/settings/settings.json
+
+# Worktree artifacts
+*.log
