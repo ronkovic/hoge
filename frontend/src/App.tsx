@@ -9,6 +9,7 @@ import './App.css';
 function App() {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   const [todos, setTodos] = useState<Todo[]>([]);
 
   useEffect(() => {
@@ -63,6 +64,8 @@ function App() {
 =======
 =======
 >>>>>>> feature/_20260205_153345-task-012
+=======
+>>>>>>> feature/_20260205_153345-task-012
   return (
     <BrowserRouter>
       <Routes>
@@ -87,6 +90,9 @@ function App() {
       </Routes>
     </BrowserRouter>
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> feature/_20260205_153345-task-012
+=======
 >>>>>>> feature/_20260205_153345-task-012
 =======
 >>>>>>> feature/_20260205_153345-task-012
