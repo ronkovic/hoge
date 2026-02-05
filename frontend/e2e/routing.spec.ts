@@ -9,11 +9,23 @@ test.describe('React Router設定とページルーティング', () => {
   });
 
   test('Todoリストページ(/todos)にアクセスできる', async ({ page }) => {
+    // 認証状態を設定
+    await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.setItem('authToken', 'test-token-12345');
+    });
+
     await page.goto('/todos');
     await expect(page.locator('[data-testid="todos-page"]')).toBeVisible();
   });
 
   test('Dashboardページ(/dashboard)にアクセスできる', async ({ page }) => {
+    // 認証状態を設定
+    await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.setItem('authToken', 'test-token-12345');
+    });
+
     await page.goto('/dashboard');
     await expect(page.locator('[data-testid="dashboard-page"]')).toBeVisible();
   });
@@ -25,7 +37,14 @@ test.describe('React Router設定とページルーティング', () => {
 
   // ナビゲーションリンクのテスト
   test('ナビゲーションリンクが正しく動作する', async ({ page }) => {
+    // 認証状態を設定
     await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.setItem('authToken', 'test-token-12345');
+    });
+
+    // Dashboardページに移動
+    await page.goto('/dashboard');
 
     // Todosリンクをクリック
     await page.click('[data-testid="nav-link-todos"]');
