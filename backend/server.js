@@ -10,10 +10,11 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 
-// In-memory storage for testing (最小限の実装)
+// In-memory storage for todos
 let todos = [];
 let nextId = 1;
 
+<<<<<<< HEAD
 // In-memory storage for users and tokens
 let users = [];
 let userNextId = 1;
@@ -102,6 +103,21 @@ app.post('/api/auth/logout', authMiddleware, (req, res) => {
 
   res.status(200).json({ message: 'Logged out successfully' });
 });
+=======
+// In-memory storage for articles
+let articles = [
+  {
+    id: 1,
+    user_id: 1,
+    title: 'サンプル記事',
+    content: 'これはサンプル記事の本文です。',
+    published: false,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  }
+];
+let nextArticleId = 2;
+>>>>>>> feature/_20260205_153345-task-008
 
 // GET /todos - すべてのTodoを取得
 app.get('/todos', (req, res) => {
@@ -168,6 +184,105 @@ app.delete('/todos/:id', (req, res) => {
 
   todos.splice(todoIndex, 1);
   res.status(200).json({ message: 'Todo deleted successfully' });
+});
+
+// GET /api/articles - すべての記事を取得
+app.get('/api/articles', (req, res) => {
+  res.status(200).json(articles);
+});
+
+// GET /api/articles/:id - 特定の記事を取得
+app.get('/api/articles/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const article = articles.find(a => a.id === id);
+
+  if (!article) {
+    return res.status(404).json({ message: 'Article not found' });
+  }
+
+  res.status(200).json(article);
+});
+
+// POST /api/articles - 新しい記事を作成
+app.post('/api/articles', (req, res) => {
+  const { user_id, title, content, published } = req.body;
+
+  // バリデーション
+  if (!user_id) {
+    return res.status(400).json({ message: 'user_id is required' });
+  }
+
+  if (!title) {
+    return res.status(400).json({ message: 'Title is required' });
+  }
+
+  if (title.length > 200) {
+    return res.status(400).json({ message: 'Title must be 200 characters or less' });
+  }
+
+  if (content === undefined || content === null || content === '') {
+    return res.status(400).json({ message: 'Content is required' });
+  }
+
+  if (published !== undefined && typeof published !== 'boolean') {
+    return res.status(400).json({ message: 'published must be a boolean' });
+  }
+
+  const now = new Date().toISOString();
+  const newArticle = {
+    id: nextArticleId++,
+    user_id,
+    title,
+    content,
+    published: published === undefined ? false : published,
+    created_at: now,
+    updated_at: now
+  };
+
+  articles.push(newArticle);
+  res.status(201).json(newArticle);
+});
+
+// PUT /api/articles/:id - 記事を更新
+app.put('/api/articles/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const { title, content, published } = req.body;
+  const articleIndex = articles.findIndex(a => a.id === id);
+
+  if (articleIndex === -1) {
+    return res.status(404).json({ message: 'Article not found' });
+  }
+
+  const now = new Date().toISOString();
+  articles[articleIndex] = {
+    ...articles[articleIndex],
+    title: title !== undefined ? title : articles[articleIndex].title,
+    content: content !== undefined ? content : articles[articleIndex].content,
+    published: published !== undefined ? published : articles[articleIndex].published,
+    updated_at: now
+  };
+
+  res.status(200).json(articles[articleIndex]);
+});
+
+// DELETE /api/articles/:id - 記事を削除
+app.delete('/api/articles/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const articleIndex = articles.findIndex(a => a.id === id);
+
+  if (articleIndex === -1) {
+    return res.status(404).json({ message: 'Article not found' });
+  }
+
+  articles.splice(articleIndex, 1);
+  res.status(200).json({ message: 'Article deleted successfully' });
+});
+
+// GET /api/articles/user/:userId - ユーザー別記事一覧
+app.get('/api/articles/user/:userId', (req, res) => {
+  const userId = parseInt(req.params.userId);
+  const userArticles = articles.filter(a => a.user_id === userId);
+  res.status(200).json(userArticles);
 });
 
 // サーバー起動（直接実行時のみ）
