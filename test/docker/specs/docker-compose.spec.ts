@@ -97,7 +97,12 @@ test.describe('Docker Compose Environment', () => {
 
     // PostgreSQLへの依存関係
     expect(backend.depends_on).toBeDefined();
-    expect(backend.depends_on).toContain('postgres');
+    // depends_onはオブジェクトまたは配列の可能性がある
+    if (Array.isArray(backend.depends_on)) {
+      expect(backend.depends_on).toContain('postgres');
+    } else {
+      expect(backend.depends_on.postgres).toBeDefined();
+    }
   });
 
   // テストケース5: Frontendサービスの設定確認
