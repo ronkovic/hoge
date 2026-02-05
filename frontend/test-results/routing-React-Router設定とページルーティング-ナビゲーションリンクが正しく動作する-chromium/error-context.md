@@ -2,8 +2,18 @@
 
 ```yaml
 - generic [ref=e3]:
-  - heading "Todo アプリケーション" [level=1] [ref=e4]
+  - heading "ログイン" [level=1] [ref=e4]
   - generic [ref=e5]:
-    - textbox "新しいTodoを入力" [ref=e6]
-    - button "追加" [ref=e7] [cursor=pointer]
+    - textbox "ユーザー名" [ref=e7]
+    - textbox "パスワード" [ref=e9]
+    - button "ログイン" [ref=e10] [cursor=pointer]
+  - navigation [ref=e11]:
+    - link "Home" [ref=e12] [cursor=pointer]:
+      - /url: /
+    - text: "|"
+    - link "Todos" [ref=e13] [cursor=pointer]:
+      - /url: /todos
+    - text: "|"
+    - link "Dashboard" [ref=e14] [cursor=pointer]:
+      - /url: /dashboard
 ```
