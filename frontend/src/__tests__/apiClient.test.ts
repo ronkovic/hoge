@@ -1,8 +1,35 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import axios from 'axios';
-import { apiClient } from '../api/apiClient';
 
-vi.mock('axios');
+// Mock axios.create to return a proper axios instance
+vi.mock('axios', () => {
+  const mockAxiosInstance = {
+    defaults: {
+      baseURL: 'http://localhost:8080/api',
+      timeout: 10000,
+      headers: {
+        'Content-Type': 'application/json',
+        common: {},
+      },
+    },
+    interceptors: {
+      request: {
+        use: vi.fn(),
+      },
+      response: {
+        use: vi.fn(),
+      },
+    },
+  };
+
+  return {
+    default: {
+      create: vi.fn(() => mockAxiosInstance),
+    },
+  };
+});
+
+import { apiClient, setAuthToken, getAuthToken, shouldRetry } from '../api/apiClient';
 
 describe('apiClient', () => {
   beforeEach(() => {
@@ -108,15 +135,23 @@ describe('apiClient', () => {
         { name: '認証トークンを設定できる', token: 'test-token-123' },
         { name: 'nullトークンを設定するとヘッダーから削除される', token: null },
       ])('$name', ({ token }) => {
-        // setAuthTokenヘルパー関数のテスト
-        // 実装ではapiClient.setAuthToken(token)のような形式
+        setAuthToken(token);
+
+        if (token) {
+          expect(apiClient.defaults.headers.common['Authorization']).toBe(`Bearer ${token}`);
+          expect(getAuthToken()).toBe(token);
+        } else {
+          expect(apiClient.defaults.headers.common['Authorization']).toBeUndefined();
+          expect(getAuthToken()).toBeNull();
+        }
       });
     });
 
     describe('getAuthToken', () => {
       it('現在の認証トークンを取得できる', () => {
-        // getAuthTokenヘルパー関数のテスト
-        // 実装ではapiClient.getAuthToken()のような形式
+        const token = 'test-token-456';
+        setAuthToken(token);
+        expect(getAuthToken()).toBe(token);
       });
     });
   });
@@ -126,21 +161,21 @@ describe('apiClient', () => {
       {
         name: 'ネットワークエラーの場合、リトライする',
         error: { code: 'ECONNABORTED' },
-        shouldRetry: true,
+        expectedRetry: true,
       },
       {
         name: '500エラーの場合、リトライする',
         error: { response: { status: 500 } },
-        shouldRetry: true,
+        expectedRetry: true,
       },
       {
         name: '400エラーの場合、リトライしない',
         error: { response: { status: 400 } },
-        shouldRetry: false,
+        expectedRetry: false,
       },
-    ])('$name', ({ error, shouldRetry }) => {
-      // リトライロジックのテスト
-      // 実装ではaxios-retryなどを使用する可能性
+    ])('$name', ({ error, expectedRetry }) => {
+      const result = shouldRetry(error);
+      expect(result).toBe(expectedRetry);
     });
   });
 
