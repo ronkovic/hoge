@@ -189,6 +189,13 @@ app.get('/api/articles', (req, res) => {
   res.status(200).json(articles);
 });
 
+// GET /api/articles/user/:userId - ユーザー別記事一覧 (より具体的なルートを先に定義)
+app.get('/api/articles/user/:userId', (req, res) => {
+  const userId = parseInt(req.params.userId);
+  const userArticles = articles.filter(a => a.user_id === userId);
+  res.status(200).json(userArticles);
+});
+
 // GET /api/articles/:id - 特定の記事を取得
 app.get('/api/articles/:id', (req, res) => {
   const id = parseInt(req.params.id);
@@ -274,13 +281,6 @@ app.delete('/api/articles/:id', (req, res) => {
 
   articles.splice(articleIndex, 1);
   res.status(200).json({ message: 'Article deleted successfully' });
-});
-
-// GET /api/articles/user/:userId - ユーザー別記事一覧
-app.get('/api/articles/user/:userId', (req, res) => {
-  const userId = parseInt(req.params.userId);
-  const userArticles = articles.filter(a => a.user_id === userId);
-  res.status(200).json(userArticles);
 });
 
 // サーバー起動（直接実行時のみ）
