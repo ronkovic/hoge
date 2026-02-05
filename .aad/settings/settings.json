@@ -1,0 +1,102 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go test *)",
+      "Bash(go build *)",
+      "Bash(go mod *)",
+      "Bash(npm run *)",
+      "Bash(npm test)",
+      "Bash(npx playwright *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git branch *)",
+      "Bash(git checkout -b *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git worktree *)",
+      "Bash(gh pr *)",
+      "Bash(gh issue *)",
+      "Read",
+      "Grep",
+      "Glob",
+      "Write(.aad/*)",
+      "Write(README.md)",
+      "Write(docs/*)",
+      "Write(internal/*)",
+      "Write(cmd/*)",
+      "Write(db/*)",
+      "Write(test/*)",
+      "Edit(.aad/*)",
+      "Edit(README.md)",
+      "Edit(docs/*)",
+      "Edit(internal/*)",
+      "Edit(cmd/*)",
+      "Edit(db/*)",
+      "Edit(test/*)"
+    ],
+    "deny": [
+      "Bash(git push origin main)",
+      "Bash(git push origin master)",
+      "Bash(git push -f *)",
+      "Bash(git push --force *)",
+      "Bash(git reset --hard *)",
+      "Bash(rm -rf /)",
+      "Bash(rm -rf ~)",
+      "Bash(rm -rf /*)",
+      "Bash(curl * | sh)",
+      "Bash(curl * | bash)",
+      "Bash(wget * | sh)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(~/.ssh/*)",
+      "Read(~/.aws/*)",
+      "Write(.env)",
+      "Write(.env.*)",
+      "Write(~/.ssh/*)",
+      "Write(~/.aws/*)",
+      "Write(.claude/settings.json)",
+      "Edit(.env)",
+      "Edit(.env.*)",
+      "Edit(~/.ssh/*)",
+      "Edit(~/.aws/*)",
+      "Edit(.claude/settings.json)"
+    ],
+    "ask": [
+      "Bash(git push *)"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true,
+    "network": {
+      "allowedDomains": ["github.com", "api.github.com", "npmjs.org", "proxy.golang.org"]
+    }
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/aad-validate-command.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/aad-post-edit-verify.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
