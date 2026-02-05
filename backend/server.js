@@ -15,6 +15,7 @@ let todos = [];
 let nextId = 1;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // In-memory storage for users and tokens
 let users = [];
 let userNextId = 1;
@@ -118,6 +119,11 @@ let articles = [
 ];
 let nextArticleId = 2;
 >>>>>>> feature/_20260205_153345-task-008
+=======
+// In-memory storage for comments
+let comments = [];
+let nextCommentId = 1;
+>>>>>>> feature/_20260205_153345-task-009
 
 // GET /todos - すべてのTodoを取得
 app.get('/todos', (req, res) => {
@@ -186,6 +192,7 @@ app.delete('/todos/:id', (req, res) => {
   res.status(200).json({ message: 'Todo deleted successfully' });
 });
 
+<<<<<<< HEAD
 // GET /api/articles - すべての記事を取得
 app.get('/api/articles', (req, res) => {
   res.status(200).json(articles);
@@ -284,6 +291,84 @@ app.get('/api/articles/user/:userId', (req, res) => {
   const userArticles = articles.filter(a => a.user_id === userId);
   res.status(200).json(userArticles);
 });
+=======
+// GET /comments - すべてのコメントを取得
+app.get('/comments', (req, res) => {
+  // 作成日時の降順でソート
+  const sortedComments = [...comments].sort((a, b) =>
+    new Date(b.createdAt) - new Date(a.createdAt)
+  );
+  res.status(200).json(sortedComments);
+});
+
+// GET /comments/:id - 特定のコメントを取得
+app.get('/comments/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+
+  if (isNaN(id)) {
+    return res.status(400).json({ message: 'Invalid comment ID' });
+  }
+
+  const comment = comments.find(c => c.id === id);
+
+  if (!comment) {
+    return res.status(404).json({ message: 'Comment not found' });
+  }
+
+  res.status(200).json(comment);
+});
+
+// POST /comments - 新しいコメントを作成
+app.post('/comments', (req, res) => {
+  const { content, author } = req.body;
+
+  if (!content) {
+    return res.status(400).json({ message: 'Content is required' });
+  }
+
+  if (!author) {
+    return res.status(400).json({ message: 'Author is required' });
+  }
+
+  if (content.length > 500) {
+    return res.status(400).json({ message: 'Content must be less than 500 characters' });
+  }
+
+  const newComment = {
+    id: nextCommentId++,
+    content,
+    author,
+    createdAt: new Date().toISOString()
+  };
+
+  comments.push(newComment);
+  res.status(201).json(newComment);
+});
+
+// DELETE /comments/:id - コメントを削除
+app.delete('/comments/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+
+  if (isNaN(id)) {
+    return res.status(400).json({ message: 'Invalid comment ID' });
+  }
+
+  const commentIndex = comments.findIndex(c => c.id === id);
+
+  if (commentIndex === -1) {
+    return res.status(404).json({ message: 'Comment not found' });
+  }
+
+  comments.splice(commentIndex, 1);
+  res.status(200).json({ message: 'Comment deleted successfully' });
+});
+
+// テスト用のリセット関数
+export function resetComments() {
+  comments = [];
+  nextCommentId = 1;
+}
+>>>>>>> feature/_20260205_153345-task-009
 
 // サーバー起動（直接実行時のみ）
 // import.meta.urlを使用してモジュールが直接実行されたかを判定
