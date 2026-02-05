@@ -1,6 +1,47 @@
-import { afterEach, vi } from 'vitest';
+import { afterEach, beforeEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
+
+// localStorageとsessionStorageのモック
+const localStorageMock = {
+  store: {} as Record<string, string>,
+  getItem(key: string) {
+    return this.store[key] || null;
+  },
+  setItem(key: string, value: string) {
+    this.store[key] = value;
+  },
+  removeItem(key: string) {
+    delete this.store[key];
+  },
+  clear() {
+    this.store = {};
+  },
+};
+
+const sessionStorageMock = {
+  store: {} as Record<string, string>,
+  getItem(key: string) {
+    return this.store[key] || null;
+  },
+  setItem(key: string, value: string) {
+    this.store[key] = value;
+  },
+  removeItem(key: string) {
+    delete this.store[key];
+  },
+  clear() {
+    this.store = {};
+  },
+};
+
+Object.defineProperty(globalThis, 'localStorage', {
+  value: localStorageMock,
+});
+
+Object.defineProperty(globalThis, 'sessionStorage', {
+  value: sessionStorageMock,
+});
 
 // todoApiをモック化
 vi.mock('../api/todoApi', () => ({
@@ -13,6 +54,11 @@ vi.mock('../api/todoApi', () => ({
     deleteTodo: vi.fn(() => Promise.resolve()),
   },
 }));
+
+beforeEach(() => {
+  localStorageMock.clear();
+  sessionStorageMock.clear();
+});
 
 afterEach(() => {
   cleanup();
