@@ -8,7 +8,14 @@ const TODO_ITEMS = [
 
 test.describe('Todo アプリケーション', () => {
   test.beforeEach(async ({ page }) => {
+    // 認証状態を設定
     await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.setItem('authToken', 'test-token-12345');
+    });
+
+    // Todosページに移動
+    await page.goto('/todos');
   });
 
   test.describe('Todo一覧表示機能', () => {

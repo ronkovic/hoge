@@ -1,11 +1,15 @@
-import { useState, useEffect } from 'react';
-import { TodoList } from './components/TodoList';
-import { TodoForm } from './components/TodoForm';
-import { todoApi } from './api/todoApi';
-import type { Todo } from './types/todo';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { LoginPage } from './pages/LoginPage';
+import { TodosPage } from './pages/TodosPage';
+import { DashboardPage } from './pages/DashboardPage';
+import { NotFoundPage } from './pages/NotFoundPage';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import './App.css';
 
 function App() {
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
   const [todos, setTodos] = useState<Todo[]>([]);
 
   useEffect(() => {
@@ -57,6 +61,41 @@ function App() {
       <TodoForm onSubmit={handleAddTodo} />
       <TodoList todos={todos} onToggle={handleToggleTodo} onDelete={handleDeleteTodo} />
     </div>
+=======
+=======
+>>>>>>> feature/_20260205_153345-task-012
+=======
+>>>>>>> feature/_20260205_153345-task-012
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route
+          path="/todos"
+          element={
+            <ProtectedRoute>
+              <TodosPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </BrowserRouter>
+<<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> feature/_20260205_153345-task-012
+=======
+>>>>>>> feature/_20260205_153345-task-012
+=======
+>>>>>>> feature/_20260205_153345-task-012
   );
 }
 
