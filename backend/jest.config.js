@@ -15,5 +15,6 @@ export default {
     '!jest.config.js'
   ],
   coverageDirectory: 'coverage',
-  verbose: true
+  verbose: true,
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js']
 };
