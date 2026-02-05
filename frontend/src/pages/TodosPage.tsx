@@ -9,16 +9,16 @@ export function TodosPage() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const navigate = useNavigate();
 
-  const loadTodos = async () => {
-    try {
-      const data = await todoApi.getTodos();
-      setTodos(data);
-    } catch (error) {
-      console.error('Failed to load todos:', error);
-    }
-  };
-
   useEffect(() => {
+    const loadTodos = async () => {
+      try {
+        const data = await todoApi.getTodos();
+        setTodos(data);
+      } catch (error) {
+        console.error('Failed to load todos:', error);
+      }
+    };
+
     loadTodos();
   }, []);
 
