@@ -16,10 +16,27 @@ let nextId = 1;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> feature/_20260205_153345-task-008
 // In-memory storage for users and tokens
 let users = [];
 let userNextId = 1;
 let tokens = new Map();
+
+// In-memory storage for articles
+let articles = [
+  {
+    id: 1,
+    user_id: 1,
+    title: 'サンプル記事',
+    content: 'これはサンプル記事の本文です。',
+    published: false,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  }
+];
+let nextArticleId = 2;
 
 // Auth middleware
 const authMiddleware = (req, res, next) => {
@@ -104,6 +121,7 @@ app.post('/api/auth/logout', authMiddleware, (req, res) => {
 
   res.status(200).json({ message: 'Logged out successfully' });
 });
+<<<<<<< HEAD
 =======
 // In-memory storage for articles
 let articles = [
@@ -124,6 +142,8 @@ let nextArticleId = 2;
 let comments = [];
 let nextCommentId = 1;
 >>>>>>> feature/_20260205_153345-task-009
+=======
+>>>>>>> feature/_20260205_153345-task-008
 
 // GET /todos - すべてのTodoを取得
 app.get('/todos', (req, res) => {
@@ -196,6 +216,13 @@ app.delete('/todos/:id', (req, res) => {
 // GET /api/articles - すべての記事を取得
 app.get('/api/articles', (req, res) => {
   res.status(200).json(articles);
+});
+
+// GET /api/articles/user/:userId - ユーザー別記事一覧 (より具体的なルートを先に定義)
+app.get('/api/articles/user/:userId', (req, res) => {
+  const userId = parseInt(req.params.userId);
+  const userArticles = articles.filter(a => a.user_id === userId);
+  res.status(200).json(userArticles);
 });
 
 // GET /api/articles/:id - 特定の記事を取得
@@ -285,6 +312,7 @@ app.delete('/api/articles/:id', (req, res) => {
   res.status(200).json({ message: 'Article deleted successfully' });
 });
 
+<<<<<<< HEAD
 // GET /api/articles/user/:userId - ユーザー別記事一覧
 app.get('/api/articles/user/:userId', (req, res) => {
   const userId = parseInt(req.params.userId);
@@ -370,6 +398,8 @@ export function resetComments() {
 }
 >>>>>>> feature/_20260205_153345-task-009
 
+=======
+>>>>>>> feature/_20260205_153345-task-008
 // サーバー起動（直接実行時のみ）
 // import.meta.urlを使用してモジュールが直接実行されたかを判定
 const __filename = fileURLToPath(import.meta.url);
