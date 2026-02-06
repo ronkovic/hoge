@@ -112,25 +112,30 @@ export function sanitizeInput(input) {
 
   let sanitized = input;
 
-  // HTMLタグとその中身を除去（scriptタグなど）
+  // まず危険なHTMLタグとその中身を完全に除去（scriptタグ、styleタグ）
   sanitized = sanitized.replace(/<script[^>]*>.*?<\/script>/gi, '');
   sanitized = sanitized.replace(/<style[^>]*>.*?<\/style>/gi, '');
 
-  // その他のHTMLタグを除去
-  sanitized = sanitized.replace(/<[^>]*>/g, '');
+  // imgタグなどの自己完結型タグを完全に除去
+  sanitized = sanitized.replace(/<img[^>]*>/gi, '');
 
-  // 特殊文字をエスケープ
-  sanitized = sanitized
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  // その他のHTMLタグを除去（<の直後がスペースでないもののみ）
+  // 例: <Company> → Company, <div> → 空, <div>Test</div> → Test
+  // 例: < word > → < word > (スペースがあるので削除しない)
+  sanitized = sanitized.replace(/<(?!\s)[^>]*>/g, '');
 
   // 前後の空白を削除
   sanitized = sanitized.trim();
 
   // 複数の空白を1つにまとめる
   sanitized = sanitized.replace(/\s+/g, ' ');
+
+  // 特殊文字をエスケープ（タグ除去後に残った特殊文字のみ）
+  sanitized = sanitized
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 
   return sanitized;
 }
