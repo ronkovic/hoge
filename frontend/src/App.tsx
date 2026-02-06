@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { TodoList } from './components/TodoList';
 import { TodoForm } from './components/TodoForm';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { DashboardPage } from './pages/DashboardPage';
 import { todoApi } from './api/todoApi';
 import type { Todo } from './types/todo';
 import './App.css';
 
-function App() {
+function HomePage() {
   const [todos, setTodos] = useState<Todo[]>([]);
 
   useEffect(() => {
@@ -53,6 +57,11 @@ function App() {
 
   return (
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+      <nav>
+        <Link data-testid="login-link" to="/login">ログイン</Link>
+        {' | '}
+        <Link data-testid="register-link" to="/register">会員登録</Link>
+      </nav>
       <h1>Todo アプリケーション</h1>
       <TodoForm onSubmit={handleAddTodo} />
       <TodoList
@@ -61,6 +70,19 @@ function App() {
         onDelete={handleDeleteTodo}
       />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
