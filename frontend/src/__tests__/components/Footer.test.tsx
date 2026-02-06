@@ -82,9 +82,7 @@ describe('Footer', () => {
         variant: 'light',
       },
     ])('$name', ({ variant }) => {
-      render(
-        <Footer copyright="© 2026" variant={variant} data-testid="footer" />
-      );
+      render(<Footer copyright="© 2026" variant={variant} data-testid="footer" />);
       expect(screen.getByTestId('footer')).toBeInTheDocument();
     });
   });
@@ -98,13 +96,7 @@ describe('Footer', () => {
 
   describe('カスタムクラス', () => {
     it('カスタムクラス名が適用される', () => {
-      render(
-        <Footer
-          copyright="© 2026"
-          className="custom-footer"
-          data-testid="footer"
-        />
-      );
+      render(<Footer copyright="© 2026" className="custom-footer" data-testid="footer" />);
       const footer = screen.getByTestId('footer');
       expect(footer).toHaveClass('custom-footer');
     });

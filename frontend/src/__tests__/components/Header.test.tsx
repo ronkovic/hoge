@@ -90,13 +90,7 @@ describe('Header', () => {
       const handleLogout = vi.fn();
       const user = userEvent.setup();
 
-      render(
-        <Header
-          title="App"
-          user={{ name: 'Test User' }}
-          onLogout={handleLogout}
-        />
-      );
+      render(<Header title="App" user={{ name: 'Test User' }} onLogout={handleLogout} />);
 
       const logoutButton = screen.getByRole('button', { name: /logout|ログアウト/i });
       await user.click(logoutButton);
@@ -114,9 +108,7 @@ describe('Header', () => {
 
   describe('カスタムクラス', () => {
     it('カスタムクラス名が適用される', () => {
-      render(
-        <Header title="App" className="custom-header" data-testid="header" />
-      );
+      render(<Header title="App" className="custom-header" data-testid="header" />);
       const header = screen.getByTestId('header');
       expect(header).toHaveClass('custom-header');
     });

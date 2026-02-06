@@ -31,7 +31,7 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
       if (onSubmit) {
         await onSubmit(email, password);
       }
-    } catch (err) {
+    } catch {
       setError('認証に失敗しました');
     }
   };
@@ -59,11 +59,7 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button
-          type="button"
-          data-testid="password-toggle"
-          onClick={togglePasswordVisibility}
-        >
+        <button type="button" data-testid="password-toggle" onClick={togglePasswordVisibility}>
           {showPassword ? '非表示' : '表示'}
         </button>
       </div>

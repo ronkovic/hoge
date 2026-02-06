@@ -47,7 +47,8 @@ const Card: React.FC<CardProps> = ({
 
   const hoverClass = hoverable ? 'hover:shadow-xl cursor-pointer' : '';
 
-  const combinedClasses = `${baseClasses} ${variantClasses[variant]} ${paddingClasses[padding]} ${shadowClasses[shadow]} ${hoverClass} ${className}`.trim();
+  const combinedClasses =
+    `${baseClasses} ${variantClasses[variant]} ${paddingClasses[padding]} ${shadowClasses[shadow]} ${hoverClass} ${className}`.trim();
 
   return (
     <div className={combinedClasses} data-testid={dataTestId}>
@@ -57,11 +58,7 @@ const Card: React.FC<CardProps> = ({
         </div>
       )}
       <div>{children}</div>
-      {footer && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          {footer}
-        </div>
-      )}
+      {footer && <div className="mt-4 pt-4 border-t border-gray-200">{footer}</div>}
     </div>
   );
 };

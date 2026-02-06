@@ -82,11 +82,7 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button
-          type="button"
-          data-testid="password-toggle"
-          onClick={togglePasswordVisibility}
-        >
+        <button type="button" data-testid="password-toggle" onClick={togglePasswordVisibility}>
           {showPassword ? '非表示' : '表示'}
         </button>
       </div>

@@ -379,7 +379,9 @@ describe('RegisterForm', () => {
       // 最初にバリデーションエラーを発生させる
       await user.click(screen.getByTestId('register-submit'));
       await waitFor(() => {
-        expect(screen.getByTestId('register-error')).toHaveTextContent('必須項目を入力してください');
+        expect(screen.getByTestId('register-error')).toHaveTextContent(
+          '必須項目を入力してください'
+        );
       });
 
       // 正しい値を入力して再送信
@@ -511,7 +513,9 @@ describe('RegisterForm', () => {
       await user.click(screen.getByTestId('register-submit'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('register-error')).toHaveTextContent('必須項目を入力してください');
+        expect(screen.getByTestId('register-error')).toHaveTextContent(
+          '必須項目を入力してください'
+        );
       });
     });
 
@@ -526,7 +530,9 @@ describe('RegisterForm', () => {
       await user.click(screen.getByTestId('register-submit'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('register-error')).toHaveTextContent('有効なメールアドレスを入力してください');
+        expect(screen.getByTestId('register-error')).toHaveTextContent(
+          '有効なメールアドレスを入力してください'
+        );
       });
     });
 
@@ -541,7 +547,9 @@ describe('RegisterForm', () => {
       await user.click(screen.getByTestId('register-submit'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('register-error')).toHaveTextContent('パスワードは8文字以上で入力してください');
+        expect(screen.getByTestId('register-error')).toHaveTextContent(
+          'パスワードは8文字以上で入力してください'
+        );
       });
     });
 

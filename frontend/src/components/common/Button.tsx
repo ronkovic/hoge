@@ -21,7 +21,8 @@ const Button: React.FC<ButtonProps> = ({
   className = '',
   'data-testid': dataTestId,
 }) => {
-  const baseClasses = 'rounded font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
+  const baseClasses =
+    'rounded font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
 
   const variantClasses = {
     default: 'bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500',
@@ -39,7 +40,8 @@ const Button: React.FC<ButtonProps> = ({
   const widthClass = fullWidth ? 'w-full' : '';
   const disabledClass = disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
 
-  const combinedClasses = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${widthClass} ${disabledClass} ${className}`.trim();
+  const combinedClasses =
+    `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${widthClass} ${disabledClass} ${className}`.trim();
 
   return (
     <button
