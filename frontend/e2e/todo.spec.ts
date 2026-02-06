@@ -8,7 +8,14 @@ const TODO_ITEMS = [
 
 test.describe('Todo アプリケーション', () => {
   test.beforeEach(async ({ page }) => {
+    // 認証状態を設定
     await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.setItem('authToken', 'test-token-12345');
+    });
+
+    // Todosページに移動
+    await page.goto('/todos');
   });
 
   test.describe('Todo一覧表示機能', () => {
@@ -85,12 +92,11 @@ test.describe('Todo アプリケーション', () => {
       const submitButton = page.locator('[data-testid="todo-submit"]');
 
       // ネットワークリクエストを監視
-      const [request] = await Promise.all([
-        page.waitForRequest(req => req.url().includes('/api/todos') && req.method() === 'POST'),
-        input.fill('新しいタスク'),
-        submitButton.click(),
-      ]);
+      const requestPromise = page.waitForRequest(req => req.url().includes('/api/todos') && req.method() === 'POST');
+      await input.fill('新しいタスク');
+      await submitButton.click();
 
+      const request = await requestPromise;
       expect(request).toBeTruthy();
     });
   });
@@ -165,11 +171,10 @@ test.describe('Todo アプリケーション', () => {
       const toggleButton = todoItem.locator('[data-testid="todo-toggle"]');
 
       // ネットワークリクエストを監視
-      const [request] = await Promise.all([
-        page.waitForRequest(req => req.url().includes('/api/todos/') && req.method() === 'PUT'),
-        toggleButton.click(),
-      ]);
+      const requestPromise = page.waitForRequest(req => req.url().includes('/api/todos/') && req.method() === 'PUT');
+      await toggleButton.click();
 
+      const request = await requestPromise;
       expect(request).toBeTruthy();
     });
   });
@@ -219,11 +224,10 @@ test.describe('Todo アプリケーション', () => {
       const deleteButton = todoItem.locator('[data-testid="todo-delete"]');
 
       // ネットワークリクエストを監視
-      const [request] = await Promise.all([
-        page.waitForRequest(req => req.url().includes('/api/todos/') && req.method() === 'DELETE'),
-        deleteButton.click(),
-      ]);
+      const requestPromise = page.waitForRequest(req => req.url().includes('/api/todos/') && req.method() === 'DELETE');
+      await deleteButton.click();
 
+      const request = await requestPromise;
       expect(request).toBeTruthy();
     });
 

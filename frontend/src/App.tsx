@@ -1,25 +1,47 @@
 import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { TodoList } from './components/TodoList';
 import { TodoForm } from './components/TodoForm';
+import { PostList } from './components/PostList';
+import { PostForm } from './components/PostForm';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { DashboardPage } from './pages/DashboardPage';
+import { TodosPage } from './pages/TodosPage';
+import { NotFoundPage } from './pages/NotFoundPage';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { todoApi } from './api/todoApi';
+import { postApi } from './api/postApi';
 import type { Todo } from './types/todo';
+import type { Post } from './types/post';
 import './App.css';
 
-function App() {
+function HomePage() {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
-    loadTodos();
-  }, []);
+    const loadTodos = async () => {
+      try {
+        const data = await todoApi.getTodos();
+        setTodos(data);
+      } catch (error) {
+        console.error('Failed to load todos:', error);
+      }
+    };
 
-  const loadTodos = async () => {
-    try {
-      const data = await todoApi.getTodos();
-      setTodos(data);
-    } catch (error) {
-      console.error('Failed to load todos:', error);
-    }
-  };
+    const loadPosts = async () => {
+      try {
+        const data = await postApi.getPosts();
+        setPosts(data);
+      } catch (error) {
+        console.error('Failed to load posts:', error);
+      }
+    };
+
+    loadTodos();
+    loadPosts();
+  }, []);
 
   const handleAddTodo = async (title: string) => {
     try {
@@ -32,11 +54,11 @@ function App() {
 
   const handleToggleTodo = async (id: number) => {
     try {
-      const todo = todos.find(t => t.id === id);
+      const todo = todos.find((t) => t.id === id);
       if (!todo) return;
 
       const updatedTodo = await todoApi.updateTodo(id, !todo.completed);
-      setTodos(todos.map(t => t.id === id ? updatedTodo : t));
+      setTodos(todos.map((t) => (t.id === id ? updatedTodo : t)));
     } catch (error) {
       console.error('Failed to toggle todo:', error);
     }
@@ -45,22 +67,80 @@ function App() {
   const handleDeleteTodo = async (id: number) => {
     try {
       await todoApi.deleteTodo(id);
-      setTodos(todos.filter(t => t.id !== id));
+      setTodos(todos.filter((t) => t.id !== id));
     } catch (error) {
       console.error('Failed to delete todo:', error);
     }
   };
 
+  const handleAddPost = async (title: string, author: string, content: string) => {
+    try {
+      const newPost = await postApi.createPost(title, author, content);
+      setPosts([...posts, newPost]);
+    } catch (error) {
+      console.error('Failed to add post:', error);
+    }
+  };
+
+  const handleDeletePost = async (id: number) => {
+    try {
+      await postApi.deletePost(id);
+      setPosts(posts.filter((p) => p.id !== id));
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+    }
+  };
+
   return (
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+      <nav>
+        <Link data-testid="login-link" to="/login">
+          ログイン
+        </Link>
+        {' | '}
+        <Link data-testid="register-link" to="/register">
+          会員登録
+        </Link>
+      </nav>
       <h1>Todo アプリケーション</h1>
       <TodoForm onSubmit={handleAddTodo} />
-      <TodoList
-        todos={todos}
-        onToggle={handleToggleTodo}
-        onDelete={handleDeleteTodo}
-      />
+      <TodoList todos={todos} onToggle={handleToggleTodo} onDelete={handleDeleteTodo} />
+
+      <hr style={{ margin: '40px 0' }} />
+
+      <h1>Post アプリケーション</h1>
+      <PostForm onSubmit={handleAddPost} />
+      <PostList posts={posts} onDelete={handleDeletePost} />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route
+          path="/todos"
+          element={
+            <ProtectedRoute>
+              <TodosPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
