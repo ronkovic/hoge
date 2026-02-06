@@ -14,27 +14,27 @@ function App() {
   const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
+    const loadTodos = async () => {
+      try {
+        const data = await todoApi.getTodos();
+        setTodos(data);
+      } catch (error) {
+        console.error('Failed to load todos:', error);
+      }
+    };
+
+    const loadPosts = async () => {
+      try {
+        const data = await postApi.getPosts();
+        setPosts(data);
+      } catch (error) {
+        console.error('Failed to load posts:', error);
+      }
+    };
+
     loadTodos();
     loadPosts();
   }, []);
-
-  const loadTodos = async () => {
-    try {
-      const data = await todoApi.getTodos();
-      setTodos(data);
-    } catch (error) {
-      console.error('Failed to load todos:', error);
-    }
-  };
-
-  const loadPosts = async () => {
-    try {
-      const data = await postApi.getPosts();
-      setPosts(data);
-    } catch (error) {
-      console.error('Failed to load posts:', error);
-    }
-  };
 
   const handleAddTodo = async (title: string) => {
     try {
