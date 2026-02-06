@@ -17,6 +17,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\""
   },
   "dependencies": {
+    "@tailwindcss/postcss": "^4.1.18",
     "axios": "^1.13.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
