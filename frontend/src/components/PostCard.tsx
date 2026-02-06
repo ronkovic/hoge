@@ -16,7 +16,7 @@ export function PostCard({ post, onDelete }: PostCardProps) {
       <div data-testid="post-author">著者: {post.author}</div>
       <div data-testid="post-created-at">作成日時: {post.createdAt}</div>
       <div data-testid="post-content">
-        本文: {showFullContent ? post.content : post.content.substring(0, 50)}
+        本文: {showFullContent ? post.content : (post.content.length > 50 ? post.content.substring(0, 50) + '...' : post.content)}
       </div>
       {showFullContent && (
         <div data-testid="post-full-content">{post.content}</div>
