@@ -11,7 +11,19 @@ import multer from 'multer';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8080;
+
+// CORS設定
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 // Simple HTML sanitizer - removes all HTML tags and dangerous characters
 function simpleHtmlSanitize(input) {
@@ -133,7 +145,7 @@ function validatePasswordStrength(password) {
 
 // In-memory storage for todos
 let todos = [];
-let nextId = 1;
+let nextTodoId = 1;
 
 // In-memory storage for users and tokens
 let users = [];
@@ -157,6 +169,10 @@ let articles = [
   }
 ];
 let nextArticleId = 2;
+
+// In-memory storage for posts
+let posts = [];
+let nextPostId = 1;
 
 // Auth middleware
 const authMiddleware = (req, res, next) => {
@@ -274,13 +290,13 @@ app.post('/api/upload', upload.single('file'), (req, res, next) => {
   next();
 });
 
-// GET /todos - すべてのTodoを取得
-app.get('/todos', (req, res) => {
+// GET /api/todos - すべてのTodoを取得
+app.get('/api/todos', (req, res) => {
   res.status(200).json(todos);
 });
 
-// GET /todos/:id - 特定のTodoを取得
-app.get('/todos/:id', (req, res) => {
+// GET /api/todos/:id - 特定のTodoを取得
+app.get('/api/todos/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const todo = todos.find(t => t.id === id);
 
@@ -291,8 +307,8 @@ app.get('/todos/:id', (req, res) => {
   res.status(200).json(todo);
 });
 
-// POST /todos - 新しいTodoを作成
-app.post('/todos', (req, res) => {
+// POST /api/todos - 新しいTodoを作成
+app.post('/api/todos', (req, res) => {
   const { title, completed } = req.body;
 
   if (!title) {
@@ -300,7 +316,7 @@ app.post('/todos', (req, res) => {
   }
 
   const newTodo = {
-    id: nextId++,
+    id: nextTodoId++,
     title,
     completed: completed || false
   };
@@ -309,8 +325,8 @@ app.post('/todos', (req, res) => {
   res.status(201).json(newTodo);
 });
 
-// PUT /todos/:id - Todoを更新
-app.put('/todos/:id', (req, res) => {
+// PUT /api/todos/:id - Todoを更新
+app.put('/api/todos/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const { title, completed } = req.body;
   const todoIndex = todos.findIndex(t => t.id === id);
@@ -328,8 +344,8 @@ app.put('/todos/:id', (req, res) => {
   res.status(200).json(todos[todoIndex]);
 });
 
-// DELETE /todos/:id - Todoを削除
-app.delete('/todos/:id', (req, res) => {
+// DELETE /api/todos/:id - Todoを削除
+app.delete('/api/todos/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const todoIndex = todos.findIndex(t => t.id === id);
 
@@ -525,6 +541,44 @@ export function resetComments() {
   comments = [];
   nextCommentId = 1;
 }
+
+// GET /api/posts - すべてのPostを取得
+app.get('/api/posts', (req, res) => {
+  res.status(200).json(posts);
+});
+
+// POST /api/posts - 新しいPostを作成
+app.post('/api/posts', (req, res) => {
+  const { title, author, content } = req.body;
+
+  if (!title || !author || !content) {
+    return res.status(400).json({ message: 'Title, author, and content are required' });
+  }
+
+  const newPost = {
+    id: nextPostId++,
+    title,
+    author,
+    content,
+    createdAt: new Date().toISOString()
+  };
+
+  posts.push(newPost);
+  res.status(201).json(newPost);
+});
+
+// DELETE /api/posts/:id - Postを削除
+app.delete('/api/posts/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const postIndex = posts.findIndex(p => p.id === id);
+
+  if (postIndex === -1) {
+    return res.status(404).json({ message: 'Post not found' });
+  }
+
+  posts.splice(postIndex, 1);
+  res.status(200).json({ message: 'Post deleted successfully' });
+});
 
 // サーバー起動（直接実行時のみ）
 // import.meta.urlを使用してモジュールが直接実行されたかを判定
