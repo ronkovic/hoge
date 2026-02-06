@@ -2,6 +2,33 @@ import { afterEach, beforeEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
+// axiosをモック化
+vi.mock('axios', () => {
+  return {
+    default: {
+      create: vi.fn(() => ({
+        interceptors: {
+          request: { use: vi.fn(), eject: vi.fn() },
+          response: { use: vi.fn(), eject: vi.fn() },
+        },
+        defaults: {
+          headers: {
+            common: {},
+          },
+        },
+        get: vi.fn(() => Promise.resolve({ data: [] })),
+        post: vi.fn(() => Promise.resolve({ data: {} })),
+        put: vi.fn(() => Promise.resolve({ data: {} })),
+        delete: vi.fn(() => Promise.resolve({ data: {} })),
+      })),
+      get: vi.fn(() => Promise.resolve({ data: [] })),
+      post: vi.fn(() => Promise.resolve({ data: {} })),
+      put: vi.fn(() => Promise.resolve({ data: {} })),
+      delete: vi.fn(() => Promise.resolve({ data: {} })),
+    },
+  };
+});
+
 // localStorageとsessionStorageのモック
 const localStorageMock = {
   store: {} as Record<string, string>,
