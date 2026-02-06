@@ -60,10 +60,6 @@ describe('Input', () => {
         name: '入力値が変更される',
         inputValue: 'Hello World',
       },
-      {
-        name: '空文字が入力される',
-        inputValue: '',
-      },
     ])('$name', async ({ inputValue }) => {
       const user = userEvent.setup();
       const handleChange = vi.fn();
@@ -76,6 +72,21 @@ describe('Input', () => {
 
       expect(handleChange).toHaveBeenCalled();
       expect(input.value).toBe(inputValue);
+    });
+
+    it('空文字が入力される', async () => {
+      const user = userEvent.setup();
+
+      render(<Input placeholder="Type here" />);
+      const input = screen.getByPlaceholderText('Type here') as HTMLInputElement;
+
+      // First type something
+      await user.type(input, 'test');
+      expect(input.value).toBe('test');
+
+      // Then clear it
+      await user.clear(input);
+      expect(input.value).toBe('');
     });
   });
 

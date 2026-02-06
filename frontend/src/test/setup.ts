@@ -1,5 +1,6 @@
 import { expect, afterEach, vi, beforeAll } from 'vitest';
 import { cleanup } from '@testing-library/react';
+import '@testing-library/jest-dom/vitest';
 
 // todoApiをモック化
 vi.mock('../api/todoApi', () => ({
