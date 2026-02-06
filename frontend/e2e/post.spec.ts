@@ -181,14 +181,14 @@ test.describe('Post アプリケーション', () => {
       const submitButton = page.locator('[data-testid="post-submit"]');
 
       // ネットワークリクエストを監視
-      const [request] = await Promise.all([
-        page.waitForRequest(req => req.url().includes('/api/posts') && req.method() === 'POST'),
-        titleInput.fill('新しい記事'),
-        authorInput.fill('新しい著者'),
-        contentInput.fill('新しい本文'),
-        submitButton.click(),
-      ]);
+      const requestPromise = page.waitForRequest(req => req.url().includes('/api/posts') && req.method() === 'POST');
 
+      await titleInput.fill('新しい記事');
+      await authorInput.fill('新しい著者');
+      await contentInput.fill('新しい本文');
+      await submitButton.click();
+
+      const request = await requestPromise;
       expect(request).toBeTruthy();
     });
   });
@@ -251,11 +251,10 @@ test.describe('Post アプリケーション', () => {
       const deleteButton = postCard.locator('[data-testid="post-delete"]');
 
       // ネットワークリクエストを監視
-      const [request] = await Promise.all([
-        page.waitForRequest(req => req.url().includes('/api/posts/') && req.method() === 'DELETE'),
-        deleteButton.click(),
-      ]);
+      const requestPromise = page.waitForRequest(req => req.url().includes('/api/posts/') && req.method() === 'DELETE');
+      await deleteButton.click();
 
+      const request = await requestPromise;
       expect(request).toBeTruthy();
     });
 
