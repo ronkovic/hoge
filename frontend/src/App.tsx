@@ -54,11 +54,11 @@ function HomePage() {
 
   const handleToggleTodo = async (id: number) => {
     try {
-      const todo = todos.find(t => t.id === id);
+      const todo = todos.find((t) => t.id === id);
       if (!todo) return;
 
       const updatedTodo = await todoApi.updateTodo(id, !todo.completed);
-      setTodos(todos.map(t => t.id === id ? updatedTodo : t));
+      setTodos(todos.map((t) => (t.id === id ? updatedTodo : t)));
     } catch (error) {
       console.error('Failed to toggle todo:', error);
     }
@@ -67,7 +67,7 @@ function HomePage() {
   const handleDeleteTodo = async (id: number) => {
     try {
       await todoApi.deleteTodo(id);
-      setTodos(todos.filter(t => t.id !== id));
+      setTodos(todos.filter((t) => t.id !== id));
     } catch (error) {
       console.error('Failed to delete todo:', error);
     }
@@ -85,7 +85,7 @@ function HomePage() {
   const handleDeletePost = async (id: number) => {
     try {
       await postApi.deletePost(id);
-      setPosts(posts.filter(p => p.id !== id));
+      setPosts(posts.filter((p) => p.id !== id));
     } catch (error) {
       console.error('Failed to delete post:', error);
     }
@@ -94,26 +94,23 @@ function HomePage() {
   return (
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
       <nav>
-        <Link data-testid="login-link" to="/login">ログイン</Link>
+        <Link data-testid="login-link" to="/login">
+          ログイン
+        </Link>
         {' | '}
-        <Link data-testid="register-link" to="/register">会員登録</Link>
+        <Link data-testid="register-link" to="/register">
+          会員登録
+        </Link>
       </nav>
       <h1>Todo アプリケーション</h1>
       <TodoForm onSubmit={handleAddTodo} />
-      <TodoList
-        todos={todos}
-        onToggle={handleToggleTodo}
-        onDelete={handleDeleteTodo}
-      />
+      <TodoList todos={todos} onToggle={handleToggleTodo} onDelete={handleDeleteTodo} />
 
       <hr style={{ margin: '40px 0' }} />
 
       <h1>Post アプリケーション</h1>
       <PostForm onSubmit={handleAddPost} />
-      <PostList
-        posts={posts}
-        onDelete={handleDeletePost}
-      />
+      <PostList posts={posts} onDelete={handleDeletePost} />
     </div>
   );
 }

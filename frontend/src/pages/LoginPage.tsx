@@ -25,11 +25,7 @@ export function LoginPage() {
   return (
     <div data-testid="login-page" style={{ padding: '20px', maxWidth: '400px', margin: '0 auto' }}>
       <h1>ログイン</h1>
-      {registered && (
-        <div data-testid="register-success">
-          登録が完了しました
-        </div>
-      )}
+      {registered && <div data-testid="register-success">登録が完了しました</div>}
       <LoginForm onSubmit={handleLogin} />
       <div style={{ marginTop: '20px' }}>
         <Link data-testid="to-register-link" to="/register">

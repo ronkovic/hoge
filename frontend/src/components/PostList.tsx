@@ -12,9 +12,7 @@ export function PostList({ posts, onDelete }: PostListProps) {
       {posts.length === 0 ? (
         <div data-testid="post-list-empty">記事がありません</div>
       ) : (
-        posts.map((post) => (
-          <PostCard key={post.id} post={post} onDelete={onDelete} />
-        ))
+        posts.map((post) => <PostCard key={post.id} post={post} onDelete={onDelete} />)
       )}
     </div>
   );

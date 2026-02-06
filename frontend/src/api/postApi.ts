@@ -41,7 +41,7 @@ export const postApi = {
 
   async deletePost(id: number): Promise<void> {
     if (USE_MOCK) {
-      const index = mockPosts.findIndex(p => p.id === id);
+      const index = mockPosts.findIndex((p) => p.id === id);
       if (index !== -1) {
         mockPosts.splice(index, 1);
       }

@@ -47,14 +47,18 @@ describe('PostCard', () => {
       const mockDelete = vi.fn();
       render(<PostCard post={mockPost} onDelete={mockDelete} />);
 
-      expect(screen.getByTestId('post-created-at')).toHaveTextContent('作成日時: 2026-02-06T10:00:00Z');
+      expect(screen.getByTestId('post-created-at')).toHaveTextContent(
+        '作成日時: 2026-02-06T10:00:00Z'
+      );
     });
 
     it('記事の本文が表示される', () => {
       const mockDelete = vi.fn();
       render(<PostCard post={mockPost} onDelete={mockDelete} />);
 
-      expect(screen.getByTestId('post-content')).toHaveTextContent('本文: これはテスト記事の本文です。');
+      expect(screen.getByTestId('post-content')).toHaveTextContent(
+        '本文: これはテスト記事の本文です。'
+      );
     });
 
     it('削除ボタンが表示される', () => {
@@ -152,23 +156,26 @@ describe('PostCard', () => {
       { id: 1, title: '記事1' },
       { id: 2, title: '記事2' },
       { id: 3, title: '記事3' },
-    ])('削除ボタンをクリックすると正しいIDでonDeleteが呼ばれる (ID: $id)', async ({ id, title }) => {
-      const user = userEvent.setup();
-      const mockDelete = vi.fn();
-      const post: Post = {
-        id,
-        title,
-        author: '著者',
-        content: '本文',
-        createdAt: '2026-02-06T10:00:00Z',
-      };
+    ])(
+      '削除ボタンをクリックすると正しいIDでonDeleteが呼ばれる (ID: $id)',
+      async ({ id, title }) => {
+        const user = userEvent.setup();
+        const mockDelete = vi.fn();
+        const post: Post = {
+          id,
+          title,
+          author: '著者',
+          content: '本文',
+          createdAt: '2026-02-06T10:00:00Z',
+        };
 
-      render(<PostCard post={post} onDelete={mockDelete} />);
+        render(<PostCard post={post} onDelete={mockDelete} />);
 
-      const deleteButton = screen.getByTestId('post-delete');
-      await user.click(deleteButton);
+        const deleteButton = screen.getByTestId('post-delete');
+        await user.click(deleteButton);
 
-      expect(mockDelete).toHaveBeenCalledWith(id);
-    });
+        expect(mockDelete).toHaveBeenCalledWith(id);
+      }
+    );
   });
 });

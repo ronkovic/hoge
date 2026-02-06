@@ -25,15 +25,14 @@ const Footer: React.FC<FooterProps> = ({
     light: 'bg-white text-gray-700 border-gray-200',
   };
   const positionClass = fixed ? 'fixed bottom-0 left-0 right-0 z-50' : '';
-  const combinedClasses = `${baseClasses} ${variantClasses[variant]} ${positionClass} ${className}`.trim();
+  const combinedClasses =
+    `${baseClasses} ${variantClasses[variant]} ${positionClass} ${className}`.trim();
 
   return (
     <footer className={combinedClasses} data-testid={dataTestId}>
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-          <div className="text-sm">
-            {copyright}
-          </div>
+          <div className="text-sm">{copyright}</div>
 
           {links && links.length > 0 && (
             <nav className="flex items-center space-x-6">

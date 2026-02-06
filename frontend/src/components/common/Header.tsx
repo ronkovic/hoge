@@ -31,9 +31,7 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-            {subtitle && (
-              <p className="text-sm text-gray-600 mt-1">{subtitle}</p>
-            )}
+            {subtitle && <p className="text-sm text-gray-600 mt-1">{subtitle}</p>}
           </div>
 
           {links && links.length > 0 && (
