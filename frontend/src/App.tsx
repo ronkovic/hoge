@@ -1,16 +1,88 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { TodoList } from './components/TodoList';
+import { TodoForm } from './components/TodoForm';
 import { LoginPage } from './pages/LoginPage';
-import { TodosPage } from './pages/TodosPage';
+import { RegisterPage } from './pages/RegisterPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { TodosPage } from './pages/TodosPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { todoApi } from './api/todoApi';
+import type { Todo } from './types/todo';
 import './App.css';
+
+function HomePage() {
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  useEffect(() => {
+    loadTodos();
+  }, []);
+
+  const loadTodos = async () => {
+    try {
+      const data = await todoApi.getTodos();
+      setTodos(data);
+    } catch (error) {
+      console.error('Failed to load todos:', error);
+    }
+  };
+
+  const handleAddTodo = async (title: string) => {
+    try {
+      const newTodo = await todoApi.createTodo(title);
+      setTodos([...todos, newTodo]);
+    } catch (error) {
+      console.error('Failed to add todo:', error);
+    }
+  };
+
+  const handleToggleTodo = async (id: number) => {
+    try {
+      const todo = todos.find(t => t.id === id);
+      if (!todo) return;
+
+      const updatedTodo = await todoApi.updateTodo(id, !todo.completed);
+      setTodos(todos.map(t => t.id === id ? updatedTodo : t));
+    } catch (error) {
+      console.error('Failed to toggle todo:', error);
+    }
+  };
+
+  const handleDeleteTodo = async (id: number) => {
+    try {
+      await todoApi.deleteTodo(id);
+      setTodos(todos.filter(t => t.id !== id));
+    } catch (error) {
+      console.error('Failed to delete todo:', error);
+    }
+  };
+
+  return (
+    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+      <nav>
+        <Link data-testid="login-link" to="/login">ログイン</Link>
+        {' | '}
+        <Link data-testid="register-link" to="/register">会員登録</Link>
+      </nav>
+      <h1>Todo アプリケーション</h1>
+      <TodoForm onSubmit={handleAddTodo} />
+      <TodoList
+        todos={todos}
+        onToggle={handleToggleTodo}
+        onDelete={handleDeleteTodo}
+      />
+    </div>
+  );
+}
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route
           path="/todos"
           element={

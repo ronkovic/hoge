@@ -1,52 +1,41 @@
-import { useState } from 'react';
-import type { FormEvent } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { LoginForm } from '../components/LoginForm';
 
 export function LoginPage() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+  const registered = location.state?.registered;
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-
-    if (username && password) {
+  const handleLogin = async (email: string, password: string) => {
+    // モックログイン処理
+    if (email === 'test@example.com' && password === 'password123') {
+      // トークンを保存
       localStorage.setItem('authToken', 'test-token-12345');
 
+      // リダイレクト先を取得
       const redirect = sessionStorage.getItem('redirectAfterLogin') || '/dashboard';
       sessionStorage.removeItem('redirectAfterLogin');
       navigate(redirect);
+    } else {
+      // ログイン失敗
+      throw new Error('認証に失敗しました');
     }
   };
 
   return (
     <div data-testid="login-page" style={{ padding: '20px', maxWidth: '400px', margin: '0 auto' }}>
       <h1>ログイン</h1>
-      <form data-testid="login-form" onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '10px' }}>
-          <input
-            type="text"
-            data-testid="login-username"
-            placeholder="ユーザー名"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            style={{ width: '100%', padding: '8px' }}
-          />
+      {registered && (
+        <div data-testid="register-success">
+          登録が完了しました
         </div>
-        <div style={{ marginBottom: '10px' }}>
-          <input
-            type="password"
-            data-testid="login-password"
-            placeholder="パスワード"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-        <button type="submit" data-testid="login-submit" style={{ width: '100%', padding: '10px' }}>
-          ログイン
-        </button>
-      </form>
+      )}
+      <LoginForm onSubmit={handleLogin} />
+      <div style={{ marginTop: '20px' }}>
+        <Link data-testid="to-register-link" to="/register">
+          アカウントをお持ちでない方はこちら
+        </Link>
+      </div>
       <nav style={{ marginTop: '20px' }}>
         <Link to="/" data-testid="nav-link-home">
           Home

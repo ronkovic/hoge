@@ -44,6 +44,9 @@ export function DashboardPage() {
       </div>
       <h1 data-testid="dashboard-title">Dashboard</h1>
       <p>ダッシュボードへようこそ</p>
+      <div data-testid="user-info">
+        ユーザー情報
+      </div>
     </div>
   );
 }
