@@ -19,6 +19,10 @@ let users = [];
 let userNextId = 1;
 let tokens = new Map();
 
+// In-memory storage for comments
+let comments = [];
+let nextCommentId = 1;
+
 // In-memory storage for articles
 let articles = [
   {
@@ -32,10 +36,6 @@ let articles = [
   }
 ];
 let nextArticleId = 2;
-
-// In-memory storage for comments
-let comments = [];
-let nextCommentId = 1;
 
 // Auth middleware
 const authMiddleware = (req, res, next) => {
