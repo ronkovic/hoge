@@ -13,59 +13,9 @@ interface InputProps {
   'data-testid'?: string;
 }
 
-const Input: React.FC<InputProps> = ({
-  type = 'text',
-  label,
-  placeholder,
-  value,
-  onChange,
-  error,
-  disabled = false,
-  required = false,
-  className = '',
-  'data-testid': dataTestId,
-}) => {
-  const baseClasses = 'border rounded px-3 py-2 w-full transition-colors';
-  const errorClasses = error
-    ? 'border-red-500 focus:border-red-600 focus:ring-red-500'
-    : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500';
-  const disabledClasses = disabled
-    ? 'bg-gray-100 cursor-not-allowed'
-    : 'bg-white';
-
-  const inputClasses = [
-    baseClasses,
-    errorClasses,
-    disabledClasses,
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  return (
-    <div className="w-full">
-      {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          {label}
-        </label>
-      )}
-      <input
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        required={required}
-        className={inputClasses}
-        data-testid={dataTestId}
-      />
-      {error && (
-        <p className="mt-1 text-sm text-red-600" role="alert">
-          {error}
-        </p>
-      )}
-    </div>
-  );
+// TDD Red Phase: Dummy implementation that will fail tests
+const Input: React.FC<InputProps> = () => {
+  throw new Error('Input component not implemented yet');
 };
 
 export default Input;
