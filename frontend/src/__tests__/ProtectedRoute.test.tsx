@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 
 // テスト用のダミーコンポーネント
@@ -32,7 +32,7 @@ describe('ProtectedRoute', () => {
 
       // ProtectedRouteをレンダリング
       render(
-        <BrowserRouter>
+        <MemoryRouter initialEntries={['/protected']}>
           <Routes>
             <Route path="/" element={<LoginPage />} />
             <Route
@@ -44,7 +44,7 @@ describe('ProtectedRoute', () => {
               }
             />
           </Routes>
-        </BrowserRouter>
+        </MemoryRouter>
       );
 
       // 保護されたコンテンツが表示されることを確認
@@ -61,12 +61,9 @@ describe('ProtectedRoute', () => {
         path: '/protected',
       },
     ])('$name', ({ path }) => {
-      // 初期パスを設定
-      window.history.pushState({}, '', path);
-
       // ProtectedRouteをレンダリング
       render(
-        <BrowserRouter>
+        <MemoryRouter initialEntries={[path]}>
           <Routes>
             <Route path="/" element={<LoginPage />} />
             <Route
@@ -78,7 +75,7 @@ describe('ProtectedRoute', () => {
               }
             />
           </Routes>
-        </BrowserRouter>
+        </MemoryRouter>
       );
 
       // ログインページが表示されることを確認
@@ -97,12 +94,9 @@ describe('ProtectedRoute', () => {
         path: '/dashboard',
       },
     ])('$name', ({ path }) => {
-      // 初期パスを設定
-      window.history.pushState({}, '', path);
-
       // ProtectedRouteをレンダリング
       render(
-        <BrowserRouter>
+        <MemoryRouter initialEntries={[path]}>
           <Routes>
             <Route path="/" element={<LoginPage />} />
             <Route
@@ -122,7 +116,7 @@ describe('ProtectedRoute', () => {
               }
             />
           </Routes>
-        </BrowserRouter>
+        </MemoryRouter>
       );
 
       // sessionStorageに元のパスが保存されていることを確認
@@ -146,12 +140,9 @@ describe('ProtectedRoute', () => {
       // localStorageにauthTokenを設定
       localStorage.setItem('authToken', authToken);
 
-      // 初期パスを設定
-      window.history.pushState({}, '', path);
-
       // ProtectedRouteをレンダリング
       render(
-        <BrowserRouter>
+        <MemoryRouter initialEntries={[path]}>
           <Routes>
             <Route path="/" element={<LoginPage />} />
             <Route
@@ -171,7 +162,7 @@ describe('ProtectedRoute', () => {
               }
             />
           </Routes>
-        </BrowserRouter>
+        </MemoryRouter>
       );
 
       // sessionStorageにリダイレクト先が保存されていないことを確認

@@ -48,11 +48,17 @@ export function LoginPage() {
         </button>
       </form>
       <nav style={{ marginTop: '20px' }}>
-        <Link to="/" data-testid="nav-link-home">Home</Link>
+        <Link to="/" data-testid="nav-link-home">
+          Home
+        </Link>
         {' | '}
-        <Link to="/todos" data-testid="nav-link-todos">Todos</Link>
+        <Link to="/todos" data-testid="nav-link-todos">
+          Todos
+        </Link>
         {' | '}
-        <Link to="/dashboard" data-testid="nav-link-dashboard">Dashboard</Link>
+        <Link to="/dashboard" data-testid="nav-link-dashboard">
+          Dashboard
+        </Link>
       </nav>
     </div>
   );

@@ -75,7 +75,7 @@ export const getAuthToken = (): string | null => {
 };
 
 // Retry logic helper
-export const shouldRetry = (error: any): boolean => {
+export const shouldRetry = (error: { code?: string; response?: { status: number } }): boolean => {
   // Retry on network errors
   if (error.code === 'ECONNABORTED') {
     return true;
