@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { RegisterForm } from '../components/RegisterForm';
 
 export function RegisterPage() {
@@ -29,9 +29,9 @@ export function RegisterPage() {
       )}
       <RegisterForm onSubmit={handleRegister} />
       <div>
-        <a data-testid="to-login-link" href="/login">
+        <Link data-testid="to-login-link" to="/login">
           既にアカウントをお持ちの方はこちら
-        </a>
+        </Link>
       </div>
     </div>
   );

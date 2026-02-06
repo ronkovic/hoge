@@ -45,8 +45,8 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
       if (onSubmit) {
         await onSubmit(username, email, password);
       }
-    } catch (err: any) {
-      setError(err.message || '登録に失敗しました');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : '登録に失敗しました');
     }
   };
 

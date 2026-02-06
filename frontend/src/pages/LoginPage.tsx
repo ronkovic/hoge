@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { LoginForm } from '../components/LoginForm';
 
 export function LoginPage() {
@@ -27,9 +27,9 @@ export function LoginPage() {
       )}
       <LoginForm onSubmit={handleLogin} />
       <div>
-        <a data-testid="to-register-link" href="/register">
+        <Link data-testid="to-register-link" to="/register">
           アカウントをお持ちでない方はこちら
-        </a>
+        </Link>
       </div>
     </div>
   );
