@@ -18,7 +18,7 @@ describe('統合テスト: エンドツーエンドフロー', () => {
           body: {
             username: 'integration_user',
             email: 'integration@example.com',
-            password: 'password123'
+            password: 'StrongP@ss123'
           },
           expectedStatus: 201,
           expectedKeys: ['id', 'username', 'email']
@@ -29,7 +29,7 @@ describe('統合テスト: エンドツーエンドフロー', () => {
           endpoint: '/api/auth/login',
           body: {
             email: 'integration@example.com',
-            password: 'password123'
+            password: 'StrongP@ss123'
           },
           expectedStatus: 200,
           expectedKeys: ['token', 'user'],
@@ -69,7 +69,7 @@ describe('統合テスト: エンドツーエンドフロー', () => {
           body: {
             username: 'comment_user',
             email: 'comment@example.com',
-            password: 'password123'
+            password: 'StrongP@ss123'
           },
           expectedStatus: 201
         },
@@ -79,7 +79,7 @@ describe('統合テスト: エンドツーエンドフロー', () => {
           endpoint: '/api/auth/login',
           body: {
             email: 'comment@example.com',
-            password: 'password123'
+            password: 'StrongP@ss123'
           },
           expectedStatus: 200,
           saveToken: true
@@ -200,7 +200,7 @@ describe('統合テスト: エンドツーエンドフロー', () => {
       .send({
         username: 'complex_user',
         email: 'complex@example.com',
-        password: 'password123'
+        password: 'StrongP@ss123'
       });
 
     expect(registerResponse.status).toBe(201);
@@ -211,7 +211,7 @@ describe('統合テスト: エンドツーエンドフロー', () => {
       .post('/api/auth/login')
       .send({
         email: 'complex@example.com',
-        password: 'password123'
+        password: 'StrongP@ss123'
       });
 
     expect(loginResponse.status).toBe(200);
@@ -288,7 +288,7 @@ describe('統合テスト: エンドツーエンドフロー', () => {
       .send({
         username: 'user1',
         email: 'user1@example.com',
-        password: 'password123'
+        password: 'StrongP@ss123'
       });
 
     expect(user1RegisterResponse.status).toBe(201);
@@ -297,7 +297,7 @@ describe('統合テスト: エンドツーエンドフロー', () => {
       .post('/api/auth/login')
       .send({
         email: 'user1@example.com',
-        password: 'password123'
+        password: 'StrongP@ss123'
       });
 
     const user1Token = user1LoginResponse.body.token;
@@ -308,7 +308,7 @@ describe('統合テスト: エンドツーエンドフロー', () => {
       .send({
         username: 'user2',
         email: 'user2@example.com',
-        password: 'password123'
+        password: 'StrongP@ss123'
       });
 
     expect(user2RegisterResponse.status).toBe(201);
@@ -317,7 +317,7 @@ describe('統合テスト: エンドツーエンドフロー', () => {
       .post('/api/auth/login')
       .send({
         email: 'user2@example.com',
-        password: 'password123'
+        password: 'StrongP@ss123'
       });
 
     const user2Token = user2LoginResponse.body.token;
